@@ -1,4 +1,4 @@
-package com.tonyxlab.scribbledash.ui.theme
+package com.tonyxlab.scribbledash.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

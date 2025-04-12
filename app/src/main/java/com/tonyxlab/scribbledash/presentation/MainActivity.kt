@@ -1,4 +1,4 @@
-package com.tonyxlab.scribbledash
+package com.tonyxlab.scribbledash.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.tonyxlab.scribbledash.ui.theme.ScribbleDashTheme
+import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
