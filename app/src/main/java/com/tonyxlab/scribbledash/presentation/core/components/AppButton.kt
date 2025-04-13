@@ -1,4 +1,4 @@
-package com.tonyxlab.scribbledash.presentation.core
+package com.tonyxlab.scribbledash.presentation.core.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.Dp
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.scribbledash.presentation.theme.Success
-import com.tonyxlab.scribbledash.utils.spacing
+import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 
 @Composable
 fun AppButton(

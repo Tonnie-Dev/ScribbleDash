@@ -1,4 +1,4 @@
-package com.tonyxlab.scribbledash.utils
+package com.tonyxlab.scribbledash.presentation.core.utils
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
