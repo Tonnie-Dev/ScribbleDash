@@ -31,9 +31,9 @@ private val AppColorScheme = lightColorScheme(
 @Composable
 fun ScribbleDashTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-            colorScheme = colorScheme,
+            colorScheme = AppColorScheme,
             shapes = shapes,
-            typography = typography,
+            typography = Typography,
             content = content
     )
 }

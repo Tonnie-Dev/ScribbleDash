@@ -13,7 +13,6 @@ kotlin-serializer-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", v
 agp = "8.9.1"
 kotlin = "2.0.21"
 ksp = "2.0.21-1.0.26"
-
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
