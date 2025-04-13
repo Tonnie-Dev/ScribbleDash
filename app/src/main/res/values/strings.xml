@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ScribbleDash</string>
     <string name="button_text_start">START!</string>
+    <string name="text_cancel">Cancel</string>
 </resources>
