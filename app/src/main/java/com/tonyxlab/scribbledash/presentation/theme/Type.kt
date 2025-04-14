@@ -1,6 +1,6 @@
 package com.tonyxlab.scribbledash.presentation.theme
 
-import android.R.attr.fontFamily
+
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
@@ -44,6 +44,24 @@ val Typography = Typography(
                 fontSize = 18.sp,
                 lineHeight = 26.sp,
         ),
+        labelLarge = TextStyle(
+                fontFamily = Outfit,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 24.sp,
+                lineHeight = 28.sp,
+        ),
+        labelMedium = TextStyle(
+                fontFamily = Outfit,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                lineHeight =24.sp,
+        ),
+        labelSmall = TextStyle(
+                fontFamily = Outfit,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                lineHeight = 18.sp,
+        ),
         bodyLarge = TextStyle(
                 fontFamily = Outfit,
                 fontWeight = FontWeight.Medium,
@@ -59,25 +77,6 @@ val Typography = Typography(
         bodySmall = TextStyle(
                 fontFamily = Outfit,
                 fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                lineHeight = 18.sp,
-        ),
-
-        labelLarge = TextStyle(
-                fontFamily = Outfit,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 24.sp,
-                lineHeight = 28.sp,
-        ),
-        labelMedium = TextStyle(
-                fontFamily = Outfit,
-                fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
-                lineHeight = 2424.sp,
-        ),
-        labelSmall = TextStyle(
-                fontFamily = Outfit,
-                fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
                 lineHeight = 18.sp,
         )

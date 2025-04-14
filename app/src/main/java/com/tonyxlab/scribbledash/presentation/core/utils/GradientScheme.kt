@@ -9,14 +9,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 object GradientScheme {
-    val backgroundGradient = Brush.sweepGradient(
+    val backgroundGradient = Brush.linearGradient(
             colors = listOf(Color(0xFFFEFAF6), Color(0xFFFFF1E2)),
-            center = Offset(.5f, .5f)
+            start = Offset(0f, 0f),
+            end = Offset(0f, Float.POSITIVE_INFINITY)
+
     )
 }
 
 val LocalGradient = staticCompositionLocalOf { GradientScheme }
 
-val MaterialTheme.gradient
+val MaterialTheme.gradient: GradientScheme
     @Composable @ReadOnlyComposable
     get() = LocalGradient.current

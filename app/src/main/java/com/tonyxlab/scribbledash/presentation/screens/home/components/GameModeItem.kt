@@ -29,8 +29,8 @@ import com.tonyxlab.scribbledash.presentation.theme.Success
 
 @Composable
 fun GameModeItem(
-    mode: GameMode,
-    onItemClick: (GameMode) -> Unit,
+    gameMode: GameMode,
+    onSelectGameMode: (GameMode) -> Unit,
     backgroundColor: Color = Success,
     modifier: Modifier = Modifier
 ) {
@@ -38,7 +38,7 @@ fun GameModeItem(
             modifier = modifier
                     .clip(RoundedCornerShape(MaterialTheme.spacing.spaceDoubleDp * 10))
                     .background(color = backgroundColor)
-                    .clickable { onItemClick(mode) }
+                    .clickable { onSelectGameMode(gameMode) }
                     .padding(MaterialTheme.spacing.spaceSmall)
 
     ) {
@@ -54,15 +54,15 @@ fun GameModeItem(
 
             Text(
                     modifier = Modifier.weight(1f),
-                    text = mode.title,
+                    text = gameMode.title,
                     style = MaterialTheme.typography.headlineMedium.copy(
                             color = MaterialTheme.colorScheme.onBackground
                     )
             )
             Image(
                     modifier = Modifier.weight(1f),
-                    painter = painterResource(mode.image),
-                    contentDescription = mode.title
+                    painter = painterResource(gameMode.image),
+                    contentDescription = gameMode.title
             )
         }
 
@@ -90,7 +90,7 @@ private fun GameModeItemPreview() {
                         .padding(MaterialTheme.spacing.spaceMedium),
                 verticalArrangement = Arrangement.Center
         ) {
-            GameModeItem(mode = GameMode.OneRoundWonder, onItemClick = {})
+            GameModeItem(gameMode = GameMode.OneRoundWonder, onSelectGameMode = {})
         }
     }
 }
