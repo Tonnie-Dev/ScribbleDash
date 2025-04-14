@@ -14,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.navigation.NavController
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.presentation.core.components.AppBodyText
+import com.tonyxlab.scribbledash.presentation.core.components.AppBottomBar
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeadlineText
 import com.tonyxlab.scribbledash.presentation.core.utils.GradientScheme
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
@@ -24,68 +26,92 @@ import com.tonyxlab.scribbledash.presentation.screens.home.components.GameModeIt
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 
 @Composable
-fun HomeScreenContent(
+fun DifficultyLevelScreen() {
+}
+
+@Composable
+fun HomeScreen(
+    navController: NavController,
     gameMode: GameMode,
     onSelectGameMode: (GameMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
             modifier = modifier,
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface,
+            bottomBar = {
+                AppBottomBar(navController = navController)
+            }
     ) { innerPadding ->
 
-        Box(
-                modifier = Modifier
+        HomeScreenContent(
+                modifier = modifier.padding(innerPadding),
+                gameMode = gameMode,
+                onSelectGameMode = onSelectGameMode
+        )
+
+    }
+
+}
+
+
+@Composable
+fun HomeScreenContent(
+    gameMode: GameMode,
+    onSelectGameMode: (GameMode) -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+        Column (
+                modifier = modifier
                         .drawBehind {
                             drawRect(brush = GradientScheme.backgroundGradient)
                         }
                         .fillMaxSize()
-                        .padding(innerPadding)
-        ) {
 
-            Column {
+        ){
+
+            AppHeadlineText(
+                    modifier = Modifier.padding(
+                            start = MaterialTheme.spacing.spaceMedium,
+                            end = MaterialTheme.spacing.spaceMedium,
+                            top = MaterialTheme.spacing.spaceTwelve,
+                            bottom = MaterialTheme.spacing.spaceTwelve * 8
+                    ),
+                    text = stringResource(id = R.string.app_name)
+            )
+
+            Column(
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                    bottom = MaterialTheme.spacing.spaceDoubleDp * 10
+                            ),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceExtraSmall),
+                    horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
 
                 AppHeadlineText(
-                        modifier = Modifier.padding(
-                                start = MaterialTheme.spacing.spaceMedium,
-                                end = MaterialTheme.spacing.spaceMedium,
-                                top = MaterialTheme.spacing.spaceTwelve,
-                                bottom = MaterialTheme.spacing.spaceTwelve * 8
-                        ),
-                        text = stringResource(id = R.string.app_name)
+                        text = stringResource(id = R.string.button_text_start_drawing),
+                        textStyle = MaterialTheme.typography.displayMedium
                 )
+                AppBodyText(
+                        text = stringResource(id = R.string.text_select_game_mode),
 
-                Column(
-                        modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = MaterialTheme.spacing.spaceDoubleDp * 10
-                        ),
-                        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceExtraSmall),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-
-                    AppHeadlineText(
-                            text = stringResource(id = R.string.button_text_start_drawing),
-                            textStyle = MaterialTheme.typography.displayMedium
-                    )
-                    AppBodyText(
-                            text = stringResource(id = R.string.text_select_game_mode),
-
-                            )
-                }
-
-                GameModeItem(
-                        modifier = Modifier.padding(MaterialTheme.spacing.spaceMedium),
-                        gameMode = gameMode,
-                        onSelectGameMode = onSelectGameMode
-                )
-
+                        )
             }
 
+            GameModeItem(
+                    modifier = Modifier.padding(MaterialTheme.spacing.spaceMedium),
+                    gameMode = gameMode,
+                    onSelectGameMode = onSelectGameMode
+            )
+
         }
+
     }
-}
+
 
 @PreviewLightDark
 @Composable

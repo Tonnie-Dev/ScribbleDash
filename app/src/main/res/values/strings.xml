@@ -5,4 +5,5 @@
     <string name="text_empty">Empty Screen</string>
     <string name="text_select_game_mode">Select game mode</string>
     <string name="button_text_start_drawing">Start Drawing!</string>
+    <string name="text_challenge_screen">Challenge Screen</string>
 </resources>
