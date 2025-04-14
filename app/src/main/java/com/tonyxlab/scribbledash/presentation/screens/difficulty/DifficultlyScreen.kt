@@ -3,9 +3,12 @@ package com.tonyxlab.scribbledash.presentation.screens.difficulty
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -14,14 +17,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.presentation.core.components.AppBodyText
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeadlineText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
-import com.tonyxlab.scribbledash.R
+import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.DifficultyItems
+import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.DifficultyLevel
+import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 
 @Composable
 fun DifficultyLevelScreenContent(
     onClose: () -> Unit,
+    onSelectDifficultyLevel: (DifficultyLevel) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -32,21 +40,32 @@ fun DifficultyLevelScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        IconButton(
-                modifier = Modifier.align(Alignment.End),
-                onClick = { onClose }) {
-            Icon(
-                    painter = painterResource(R.drawable.ic_close_circle),
-                    contentDescription = stringResource(id = R.string.text_close),
-                    tint = MaterialTheme.colorScheme.onSurface
-            )
+        Row(
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .height(MaterialTheme.spacing.spaceTwelve * 6)
+                     ,
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+        ) {
 
+            IconButton(
+                    modifier = Modifier.padding(end = MaterialTheme.spacing.spaceMedium),
+                    onClick = { onClose() }) {
+                Icon(
+                        modifier = Modifier.size(MaterialTheme.spacing.spaceSmall * 7),
+                        painter = painterResource(R.drawable.ic_close_circle),
+                        contentDescription = stringResource(id = R.string.text_close),
+                        tint = MaterialTheme.colorScheme.onSurface
+                )
+
+            }
         }
 
         Column(
                 modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = MaterialTheme.spacing.spaceSingleDp * 55),
+                        .padding(top = MaterialTheme.spacing.spaceOneTwentyEight, bottom = MaterialTheme.spacing.spaceSingleDp * 55),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceExtraSmall),
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -58,7 +77,27 @@ fun DifficultyLevelScreenContent(
             )
             AppBodyText(text = stringResource(id = R.string.text_select_game_mode))
         }
+
+
+        DifficultyItems(onSelectDifficultyLevel = onSelectDifficultyLevel)
     }
 
 
+}
+
+@PreviewLightDark
+@Composable
+private fun DifficultyLevelScreenContentPreview() {
+
+    ScribbleDashTheme {
+
+        Column(
+                modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+        ) {
+
+            DifficultyLevelScreenContent(onClose = {}, onSelectDifficultyLevel = {})
+        }
+    }
 }
