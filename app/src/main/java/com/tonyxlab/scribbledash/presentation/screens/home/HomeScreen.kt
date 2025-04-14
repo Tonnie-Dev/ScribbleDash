@@ -1,7 +1,6 @@
 package com.tonyxlab.scribbledash.presentation.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,55 +61,52 @@ fun HomeScreenContent(
     modifier: Modifier = Modifier
 ) {
 
-        Column (
-                modifier = modifier
-                        .drawBehind {
-                            drawRect(brush = GradientScheme.backgroundGradient)
-                        }
-                        .fillMaxSize()
+    Column(
+            modifier = modifier
+                    .drawBehind {
+                        drawRect(brush = GradientScheme.backgroundGradient)
+                    }
+                    .fillMaxSize()
 
-        ){
+    ) {
+
+        AppHeadlineText(
+                modifier = Modifier.padding(
+                        start = MaterialTheme.spacing.spaceMedium,
+                        end = MaterialTheme.spacing.spaceMedium,
+                        top = MaterialTheme.spacing.spaceTwelve,
+                        bottom = MaterialTheme.spacing.spaceTwelve * 8
+                ),
+                text = stringResource(id = R.string.app_name)
+        )
+
+        Column(
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                                bottom = MaterialTheme.spacing.spaceDoubleDp * 10
+                        ),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceExtraSmall),
+                horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
 
             AppHeadlineText(
-                    modifier = Modifier.padding(
-                            start = MaterialTheme.spacing.spaceMedium,
-                            end = MaterialTheme.spacing.spaceMedium,
-                            top = MaterialTheme.spacing.spaceTwelve,
-                            bottom = MaterialTheme.spacing.spaceTwelve * 8
-                    ),
-                    text = stringResource(id = R.string.app_name)
+                    text = stringResource(id = R.string.button_text_start_drawing),
+                    textStyle = MaterialTheme.typography.displayMedium
             )
-
-            Column(
-                    modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                    bottom = MaterialTheme.spacing.spaceDoubleDp * 10
-                            ),
-                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceExtraSmall),
-                    horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-
-                AppHeadlineText(
-                        text = stringResource(id = R.string.button_text_start_drawing),
-                        textStyle = MaterialTheme.typography.displayMedium
-                )
-                AppBodyText(
-                        text = stringResource(id = R.string.text_select_game_mode),
-
-                        )
-            }
-
-            GameModeItem(
-                    modifier = Modifier.padding(MaterialTheme.spacing.spaceMedium),
-                    gameMode = gameMode,
-                    onSelectGameMode = onSelectGameMode
-            )
-
+            AppBodyText(text = stringResource(id = R.string.text_select_game_mode))
         }
 
+        GameModeItem(
+                modifier = Modifier.padding(MaterialTheme.spacing.spaceMedium),
+                gameMode = gameMode,
+                onSelectGameMode = onSelectGameMode
+        )
+
     }
+
+}
 
 
 @PreviewLightDark
