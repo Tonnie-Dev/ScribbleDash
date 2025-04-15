@@ -72,6 +72,10 @@ dependencies {
     // Compose Navigation
     implementation(AndroidX.navigation.compose)
 
+    // Koin
+    implementation(Koin.android)
+    implementation(Koin.compose)
+
     // Accompanist Permissions
     implementation(Google.accompanist.permissions)
 
