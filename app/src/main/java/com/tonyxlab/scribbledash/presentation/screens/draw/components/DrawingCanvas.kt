@@ -10,13 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -44,7 +44,7 @@ fun DrawingCanvas(
                     defaultElevation = 6.dp
             ),
             colors = CardDefaults.cardColors(
-                    containerColor = Color.Red
+                    containerColor = MaterialTheme.colorScheme.surface
             )
     ) {
         Box(
@@ -55,61 +55,68 @@ fun DrawingCanvas(
                 contentAlignment = Alignment.Center
         ) {
 
-    Canvas(
-            modifier = modifier
-                    .clipToBounds()
-                    .background(color = Color.White)
-                    .pointerInput(true) {
-                        detectDragGestures(
-                                onDragStart = {
-                                    onAction(DrawingActionEvent.OnStartNewPath)
-                                },
+            Canvas(
+                    modifier = modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .clipToBounds()
+                            .background(color = MaterialTheme.colorScheme.surface)
+                            .pointerInput(true) {
+                                detectDragGestures(
+                                        onDragStart = {
+                                            onAction(DrawingActionEvent.OnStartNewPath)
+                                        },
 
-                                onDrag = { change, _ ->
-                                    onAction(DrawingActionEvent.OnDraw(change.position))
+                                        onDrag = { change, _ ->
+                                            onAction(DrawingActionEvent.OnDraw(change.position))
 
-                                },
-                                onDragEnd = {
-                                    onAction(DrawingActionEvent.OnEndPath)
-                                },
+                                        },
+                                        onDragEnd = {
+                                            onAction(DrawingActionEvent.OnEndPath)
+                                        },
 
-                                onDragCancel = {
+                                        onDragCancel = {
 
-                                    onAction(DrawingActionEvent.OnEndPath)
+                                            onAction(DrawingActionEvent.OnEndPath)
 
-                                }
-                        )
+                                        }
+                                )
 
 
-                    }
+                            }
 
-    ) {
+            ) {
 
-        drawGridLines()
+                drawGridLines()
 
-        paths.fastForEach { pathData ->
-            drawPath(path = pathData.path, color = pathData.color)
+                paths.fastForEach { pathData ->
+                    drawPath(path = pathData.path, color = pathData.color)
 
+                }
+
+                currentPath?.let {
+
+                    drawPath(path = it.path, color = it.color)
+                }
+
+            }
         }
-
-        currentPath?.let {
-
-            drawPath(path = it.path, color = it.color)
-        }
-
     }
-}}}
+}
 
 private fun DrawScope.drawGridLines() {
 
 
-  val canvasWidth = size.width
-  val canvasHeight = size.height
-  val cellWidth = canvasWidth/3
-  val cellHeight = canvasHeight/3
+    val canvasWidth = size.width
+    val canvasHeight = size.height
+    val cellWidth = canvasWidth / 3
+    val cellHeight = canvasHeight / 3
 
 
+    val gridLineColor = Color.Black
+/*
     val gridLineColor = OnSurfaceVar
+*/
     val gridLineWidth = 1f
 
     // Draw horizontal grid lines
@@ -135,6 +142,7 @@ private fun DrawScope.drawGridLines() {
     }
 
 }
+
 private fun DrawScope.drawPath(
     path: List<Offset>,
     color: Color = Color.Black,
@@ -144,7 +152,7 @@ private fun DrawScope.drawPath(
         if (path.isNotEmpty()) {
 
             moveTo(path.first().x, path.first().y)
-        }
+
 
         val smoothness = 5
 
@@ -167,13 +175,15 @@ private fun DrawScope.drawPath(
             }
 
 
-        }
+        }}
 
     }
 
 
     drawPath(
-            path = smoothedPath, color = color, style = Stroke(
+            path = smoothedPath,
+            color = color,
+            style = Stroke(
             width = thickness,
             cap = StrokeCap.Round,
             join = StrokeJoin.Round

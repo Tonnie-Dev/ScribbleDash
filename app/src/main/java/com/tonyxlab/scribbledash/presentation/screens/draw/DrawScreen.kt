@@ -1,8 +1,5 @@
 package com.tonyxlab.scribbledash.presentation.screens.draw
 
-import android.R.attr.text
-import android.R.attr.textStyle
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,15 +7,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.room.util.TableInfo
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.presentation.core.components.AppButton
 import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
@@ -31,6 +27,7 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActio
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.scribbledash.presentation.theme.Success
 import org.koin.androidx.compose.koinViewModel
+import timber.log.Timber
 
 
 @Composable
@@ -40,14 +37,24 @@ fun DrawScreen(
     viewModel: DrawViewModel = koinViewModel()
 ) {
 
+
+
+Timber.i("Inside Draw Screen")
+
     val state = viewModel.drawingUiState.collectAsStateWithLifecycle().value
-    DrawScreenContent(
-            modifier = modifier,
-            currentPath = state.currentPath,
-            paths = state.paths,
-            onClose = onClose,
-            onAction = viewModel::onEvent
-    )
+
+
+    Scaffold(containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
+
+
+        DrawScreenContent(
+                modifier = modifier.padding(innerPadding),
+                currentPath = state.currentPath,
+                paths = state.paths,
+                onClose = onClose,
+                onAction = viewModel::onEvent
+        )
+    }
 
 }
 
@@ -60,14 +67,15 @@ fun DrawScreenContent(
     modifier: Modifier = Modifier
 ) {
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
+            horizontalAlignment = Alignment.CenterHorizontally) {
 
         AppCloseIcon(
                 modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceTwelve * 4),
                 onClose = onClose
         )
         AppHeadlineText(
-                modifier = modifier.padding(
+                modifier = Modifier.padding(
                         bottom = MaterialTheme.spacing.spaceTwelve * 4,
                 ),
                 textStyle = MaterialTheme.typography.displayMedium,
@@ -81,12 +89,13 @@ fun DrawScreenContent(
                 onAction = onAction
         )
         Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)) {
-            AppIcon(icon = R.drawable.ic_reply) { }
-            AppIcon(icon = R.drawable.ic_forward) { }
+            AppIcon(icon = R.drawable.ic_reply, onClick = {onAction(DrawingActionEvent.OnRedo)})
+            AppIcon(icon = R.drawable.ic_forward) { {onAction(DrawingActionEvent.OnRedo)} }
             AppButton(
                     modifier = Modifier.height(MaterialTheme.spacing.spaceExtraLarge),
-                    contentColor = Success
-            ) { }
+                    contentColor = Success,
+                    onClick = { onAction(DrawingActionEvent.OnClearCanvas)}
+            )
         }
     }
 
@@ -106,7 +115,6 @@ private fun DrawScreenContentPreview() {
             DrawScreenContent(onClose = {}, currentPath = null, paths = emptyList(), onAction = {})
         }
     }
-
 
 }
 

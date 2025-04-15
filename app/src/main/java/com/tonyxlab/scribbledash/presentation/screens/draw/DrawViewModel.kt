@@ -7,14 +7,21 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActio
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import timber.log.Timber
 
 class DrawViewModel : ViewModel() {
 
+
+    init {
+        Timber.i("Init called in the viewmodel")
+    }
     private val _drawingUiState = MutableStateFlow(DrawUiState())
     val drawingUiState = _drawingUiState.asStateFlow()
 
 
     fun onEvent(event: DrawingActionEvent) {
+
+        Timber.i("OnEvent Called")
         when (event) {
             is DrawingActionEvent.OnDraw -> onDraw(event.offset)
             DrawingActionEvent.OnStartNewPath -> startDrawing()
@@ -26,6 +33,8 @@ class DrawViewModel : ViewModel() {
     }
 
     private fun onDraw(offset: Offset) {
+
+        Timber.i("onDraw Called")
         val currentPathData = _drawingUiState.value.currentPath ?: return
 
         _drawingUiState.update {
@@ -43,6 +52,8 @@ class DrawViewModel : ViewModel() {
 
 
     private fun startDrawing() {
+
+        Timber.i("Start Drawing")
         _drawingUiState.update {
 
             it.copy(
@@ -54,12 +65,16 @@ class DrawViewModel : ViewModel() {
 
     private fun endDrawing() {
 
+        Timber.i("End Drawing")
+
         val currentPathData = _drawingUiState.value.currentPath ?: return
 
         _drawingUiState.update { it.copy(currentPath = null, paths = it.paths + currentPathData) }
     }
 
     private fun unDoDrawing() {
+
+        Timber.i("Undo")
         val currentPaths = _drawingUiState.value.paths
         if (currentPaths.isNotEmpty()) {
             val lastPath = currentPaths.last()
@@ -73,6 +88,8 @@ class DrawViewModel : ViewModel() {
     }
 
     private fun reDoDrawing() {
+
+        Timber.i("Redo called")
         val undoStack = _drawingUiState.value.undoStack
         if (undoStack.isNotEmpty()) {
             val lastUndonePath = undoStack.last()
@@ -86,6 +103,8 @@ class DrawViewModel : ViewModel() {
     }
 
     private fun clearCanvas() {
+
+        Timber.i("Clear Canvas Called")
         _drawingUiState.update {
             it.copy(
                     currentPath = null,
