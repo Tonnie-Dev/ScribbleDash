@@ -2,9 +2,11 @@ package com.tonyxlab.scribbledash.presentation.screens.draw.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,11 +25,11 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
-import com.tonyxlab.scribbledash.presentation.theme.OnSurfaceVar
+import com.tonyxlab.scribbledash.presentation.theme.OnSurface
 import kotlin.math.abs
 
 @Composable
@@ -38,10 +40,10 @@ fun DrawingCanvas(
     modifier: Modifier = Modifier
 ) {
     Card(
-            modifier = modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
+            modifier = modifier,
+            shape = RoundedCornerShape(MaterialTheme.spacing.spaceTwelve * 2),
             elevation = CardDefaults.cardElevation(
-                    defaultElevation = 6.dp
+                    defaultElevation = MaterialTheme.spacing.spaceDoubleDp * 3
             ),
             colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
@@ -50,15 +52,19 @@ fun DrawingCanvas(
         Box(
                 modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f) // 1:1 aspect ratio
-                        .padding(2.dp),
+                        .aspectRatio(1f)
+                        .padding(MaterialTheme.spacing.spaceMedium)
+                        .border(
+                                width = MaterialTheme.spacing.spaceHalfDp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                shape = RoundedCornerShape(MaterialTheme.spacing.spaceTwelve * 2)
+                        ),
                 contentAlignment = Alignment.Center
         ) {
 
             Canvas(
-                    modifier = modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f)
+                    modifier = Modifier
+                            .fillMaxSize()
                             .clipToBounds()
                             .background(color = MaterialTheme.colorScheme.surface)
                             .pointerInput(true) {
@@ -91,14 +97,11 @@ fun DrawingCanvas(
 
                 paths.fastForEach { pathData ->
                     drawPath(path = pathData.path, color = pathData.color)
-
                 }
 
                 currentPath?.let {
-
                     drawPath(path = it.path, color = it.color)
                 }
-
             }
         }
     }
@@ -106,20 +109,15 @@ fun DrawingCanvas(
 
 private fun DrawScope.drawGridLines() {
 
-
     val canvasWidth = size.width
     val canvasHeight = size.height
     val cellWidth = canvasWidth / 3
     val cellHeight = canvasHeight / 3
 
+    val gridLineColor = OnSurface
+    val gridLineWidth = 1.5f
 
-    val gridLineColor = Color.Black
-/*
-    val gridLineColor = OnSurfaceVar
-*/
-    val gridLineWidth = 1f
-
-    // Draw horizontal grid lines
+    // Draw 2 horizontal lines
     for (i in 1..2) {
         val y = i * cellHeight
         drawLine(
@@ -130,7 +128,7 @@ private fun DrawScope.drawGridLines() {
         )
     }
 
-    // Draw vertical grid lines
+    // Draw 2j vertical lines
     for (i in 1..2) {
         val x = i * cellWidth
         drawLine(
@@ -153,40 +151,36 @@ private fun DrawScope.drawPath(
 
             moveTo(path.first().x, path.first().y)
 
+            val smoothness = 5
 
-        val smoothness = 5
+            for (i in 1..path.lastIndex) {
 
-        for (i in 1..path.lastIndex) {
+                val from = path[i - 1]
+                val to = path[i]
+                val dx = abs(from.x.minus(to.x))
+                val dy = abs(from.y.minus(to.y))
 
-            val from = path[i - 1]
-            val to = path[i]
-            val dx = abs(from.x.minus(to.x))
-            val dy = abs(from.y.minus(to.y))
+                if (dx >= smoothness || dy >= smoothness) {
+                    quadraticTo(
+                            x1 = (from.x + to.x) / 2f,
+                            y1 = (from.y + to.y) / 2f,
+                            x2 = to.x,
+                            y2 = to.y
+                    )
 
-            if (dx >= smoothness || dy >= smoothness) {
-
-                quadraticTo(
-                        x1 = (from.x + to.x) / 2f,
-                        y1 = (from.y + to.y) / 2f,
-                        x2 = to.x,
-                        y2 = to.y
-                )
+                }
 
             }
-
-
-        }}
+        }
 
     }
-
-
     drawPath(
             path = smoothedPath,
             color = color,
             style = Stroke(
-            width = thickness,
-            cap = StrokeCap.Round,
-            join = StrokeJoin.Round
-    )
+                    width = thickness,
+                    cap = StrokeCap.Round,
+                    join = StrokeJoin.Round
+            )
     )
 }
