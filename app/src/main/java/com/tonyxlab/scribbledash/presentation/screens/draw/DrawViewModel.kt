@@ -84,7 +84,7 @@ class DrawViewModel : ViewModel() {
     }
 
     private fun reDoDrawing() {
-        
+
         val undoStack = _drawingUiState.value.undoStack
         if (undoStack.isNotEmpty()) {
             val lastUndonePath = undoStack.last()

@@ -22,12 +22,12 @@ import com.tonyxlab.scribbledash.presentation.core.components.AppHeadlineText
 import com.tonyxlab.scribbledash.presentation.core.components.AppIcon
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.draw.components.DrawingCanvas
+import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.scribbledash.presentation.theme.Success
 import org.koin.androidx.compose.koinViewModel
-import timber.log.Timber
 
 
 @Composable
@@ -37,21 +37,16 @@ fun DrawScreen(
     viewModel: DrawViewModel = koinViewModel()
 ) {
 
-
-
-Timber.i("Inside Draw Screen")
-
     val state = viewModel.drawingUiState.collectAsStateWithLifecycle().value
 
-
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
-
 
         DrawScreenContent(
                 modifier = modifier.padding(innerPadding),
                 currentPath = state.currentPath,
                 paths = state.paths,
                 onClose = onClose,
+                buttonsState = state.buttonsState,
                 onAction = viewModel::onEvent
         )
     }
@@ -64,11 +59,14 @@ fun DrawScreenContent(
     paths: List<PathData>,
     onClose: () -> Unit,
     onAction: (DrawingActionEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    buttonsState: DrawUiState.ButtonsState = DrawUiState.ButtonsState()
 ) {
 
-    Column(modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+            modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
+            horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
         AppCloseIcon(
                 modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceTwelve * 4),
@@ -88,13 +86,25 @@ fun DrawScreenContent(
                 paths = paths,
                 onAction = onAction
         )
+
         Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)) {
-            AppIcon(icon = R.drawable.ic_reply, onClick = {onAction(DrawingActionEvent.OnRedo)})
-            AppIcon(icon = R.drawable.ic_forward) { {onAction(DrawingActionEvent.OnRedo)} }
+
+            AppIcon(
+                    enabled = buttonsState.undoButtonEnabled,
+                    icon = R.drawable.ic_reply,
+                    onClick = { onAction(DrawingActionEvent.OnUnDo) })
+
+            AppIcon(
+                    enabled = buttonsState.redoButtonEnabled,
+                    icon = R.drawable.ic_forward,
+                    onClick = { onAction(DrawingActionEvent.OnRedo) }
+            )
             AppButton(
                     modifier = Modifier.height(MaterialTheme.spacing.spaceExtraLarge),
+                    enabled = buttonsState.clearButtonEnabled,
+                    buttonText = stringResource(R.string.button_text_clear_canvas),
                     contentColor = Success,
-                    onClick = { onAction(DrawingActionEvent.OnClearCanvas)}
+                    onClick = { onAction(DrawingActionEvent.OnClearCanvas) }
             )
         }
     }
@@ -112,7 +122,12 @@ private fun DrawScreenContentPreview() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
         ) {
-            DrawScreenContent(onClose = {}, currentPath = null, paths = emptyList(), onAction = {})
+            DrawScreenContent(
+                    onClose = {},
+                    currentPath = null,
+                    paths = emptyList(),
+                    onAction = {}
+            )
         }
     }
 
