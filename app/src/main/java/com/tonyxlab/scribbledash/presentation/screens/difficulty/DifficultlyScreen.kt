@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.presentation.core.components.AppBodyText
+import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeadlineText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.DifficultyItems
@@ -40,33 +41,15 @@ fun DifficultyLevelScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Row(
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .height(MaterialTheme.spacing.spaceTwelve * 6)
-                        .padding(vertical = MaterialTheme.spacing.spaceMedium)
-                     ,
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            IconButton(
-                    modifier = Modifier.padding(end = MaterialTheme.spacing.spaceMedium),
-                    onClick = { onClose() }) {
-                Icon(
-                        modifier = Modifier.size(MaterialTheme.spacing.spaceSmall * 7),
-                        painter = painterResource(R.drawable.ic_close_circle),
-                        contentDescription = stringResource(id = R.string.text_close),
-                        tint = MaterialTheme.colorScheme.onSurface
-                )
-
-            }
-        }
+        AppCloseIcon(onClose = onClose)
 
         Column(
                 modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = MaterialTheme.spacing.spaceOneTwentyEight, bottom = MaterialTheme.spacing.spaceSingleDp * 55),
+                        .padding(
+                                top = MaterialTheme.spacing.spaceOneTwentyEight,
+                                bottom = MaterialTheme.spacing.spaceSingleDp * 55
+                        ),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceExtraSmall),
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {

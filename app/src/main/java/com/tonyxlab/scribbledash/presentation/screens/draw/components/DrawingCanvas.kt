@@ -3,21 +3,31 @@ package com.tonyxlab.scribbledash.presentation.screens.draw.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
+import com.tonyxlab.scribbledash.presentation.theme.OnSurfaceVar
 import kotlin.math.abs
 
 @Composable
@@ -27,7 +37,23 @@ fun DrawingCanvas(
     onAction: (DrawingActionEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
+    Card(
+            modifier = modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.cardElevation(
+                    defaultElevation = 6.dp
+            ),
+            colors = CardDefaults.cardColors(
+                    containerColor = Color.Red
+            )
+    ) {
+        Box(
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f) // 1:1 aspect ratio
+                        .padding(2.dp),
+                contentAlignment = Alignment.Center
+        ) {
 
     Canvas(
             modifier = modifier
@@ -59,6 +85,8 @@ fun DrawingCanvas(
 
     ) {
 
+        drawGridLines()
+
         paths.fastForEach { pathData ->
             drawPath(path = pathData.path, color = pathData.color)
 
@@ -70,9 +98,43 @@ fun DrawingCanvas(
         }
 
     }
+}}}
+
+private fun DrawScope.drawGridLines() {
+
+
+  val canvasWidth = size.width
+  val canvasHeight = size.height
+  val cellWidth = canvasWidth/3
+  val cellHeight = canvasHeight/3
+
+
+    val gridLineColor = OnSurfaceVar
+    val gridLineWidth = 1f
+
+    // Draw horizontal grid lines
+    for (i in 1..2) {
+        val y = i * cellHeight
+        drawLine(
+                color = gridLineColor,
+                start = Offset(0f, y),
+                end = Offset(canvasWidth, y),
+                strokeWidth = gridLineWidth
+        )
+    }
+
+    // Draw vertical grid lines
+    for (i in 1..2) {
+        val x = i * cellWidth
+        drawLine(
+                color = gridLineColor,
+                start = Offset(x, 0f),
+                end = Offset(x, canvasHeight),
+                strokeWidth = gridLineWidth
+        )
+    }
+
 }
-
-
 private fun DrawScope.drawPath(
     path: List<Offset>,
     color: Color = Color.Black,
