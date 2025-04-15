@@ -12,16 +12,12 @@ import timber.log.Timber
 class DrawViewModel : ViewModel() {
 
 
-    init {
-        Timber.i("Init called in the viewmodel")
-    }
     private val _drawingUiState = MutableStateFlow(DrawUiState())
     val drawingUiState = _drawingUiState.asStateFlow()
 
 
     fun onEvent(event: DrawingActionEvent) {
 
-        Timber.i("OnEvent Called")
         when (event) {
             is DrawingActionEvent.OnDraw -> onDraw(event.offset)
             DrawingActionEvent.OnStartNewPath -> startDrawing()
@@ -34,7 +30,6 @@ class DrawViewModel : ViewModel() {
 
     private fun onDraw(offset: Offset) {
 
-        Timber.i("onDraw Called")
         val currentPathData = _drawingUiState.value.currentPath ?: return
 
         _drawingUiState.update {
@@ -47,34 +42,33 @@ class DrawViewModel : ViewModel() {
             )
         }
 
-
     }
 
-
     private fun startDrawing() {
-
-
         _drawingUiState.update {
 
-            it.copy(
-                    currentPath = DrawUiState.PathData(id = System.currentTimeMillis()),
-
-            )
+            it.copy(currentPath = DrawUiState.PathData(id = System.currentTimeMillis()))
         }
+
+        updateButtonsState()
     }
 
     private fun endDrawing() {
 
-
-
         val currentPathData = drawingUiState.value.currentPath ?: return
 
-        _drawingUiState.update { it.copy(currentPath = null, paths = it.paths + currentPathData) }
+        _drawingUiState.update {
+            it.copy(
+                    currentPath = null,
+                    paths = it.paths + currentPathData
+            )
+        }
+
+        updateButtonsState()
     }
 
     private fun unDoDrawing() {
 
-        Timber.i("Undo")
         val currentPaths = _drawingUiState.value.paths
         if (currentPaths.isNotEmpty()) {
             val lastPath = currentPaths.last()
@@ -84,27 +78,30 @@ class DrawViewModel : ViewModel() {
                         undoStack = (it.undoStack + lastPath).takeLast(5) // Add to undo stack, limit to 5
                 )
             }
+
+            updateButtonsState()
         }
     }
 
     private fun reDoDrawing() {
-
-        Timber.i("Redo called")
+        
         val undoStack = _drawingUiState.value.undoStack
         if (undoStack.isNotEmpty()) {
             val lastUndonePath = undoStack.last()
             _drawingUiState.update {
                 it.copy(
                         paths = it.paths + lastUndonePath,
-                        undoStack = undoStack.dropLast(1) // Remove the restored path from the stack
+                        undoStack = undoStack.dropLast(1)
                 )
             }
+
+            updateButtonsState()
         }
     }
 
     private fun clearCanvas() {
 
-        Timber.i("Clear Canvas Called")
+
         _drawingUiState.update {
             it.copy(
                     currentPath = null,
@@ -112,7 +109,20 @@ class DrawViewModel : ViewModel() {
                     undoStack = emptyList()
             )
         }
+
+        updateButtonsState()
     }
 
+    private fun updateButtonsState() {
+        _drawingUiState.update {
+            it.copy(
+                    buttonsState = it.buttonsState.copy(
+                            undoButtonEnabled = it.paths.isNotEmpty(),
+                            redoButtonEnabled = it.undoStack.isNotEmpty(),
+                            clearButtonEnabled = it.paths.isNotEmpty() || it.currentPath != null
+                    )
+            )
+        }
+    }
 
 }

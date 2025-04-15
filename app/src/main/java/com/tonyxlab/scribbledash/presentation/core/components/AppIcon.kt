@@ -47,7 +47,10 @@ fun AppIcon(
         Icon(
                 painter = painterResource(icon),
                 contentDescription = null,
-                tint = if (enabled) onBackgroundColor else onBackgroundColor.copy(alpha = .5f)
+                tint = if (enabled)
+                    onBackgroundColor
+                else
+                    onBackgroundColor.copy(alpha = .5f)
         )
     }
 }

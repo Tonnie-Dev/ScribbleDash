@@ -11,4 +11,5 @@
     <string name="text_challenging">Challenging</string>
     <string name="text_master">Master</string>
     <string name="text_time_to_draw">Time to Draw!</string>
+    <string name="button_text_clear_canvas">CLEAR CANVAS</string>
 </resources>
