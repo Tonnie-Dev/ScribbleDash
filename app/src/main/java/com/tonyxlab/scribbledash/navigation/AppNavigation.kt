@@ -8,9 +8,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.navigation.Destinations.DifficultyLevelDestination
+import com.tonyxlab.scribbledash.navigation.Destinations.DrawScreenDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.HomeScreenDestination
 import com.tonyxlab.scribbledash.presentation.core.components.EmptyScreen
+import com.tonyxlab.scribbledash.presentation.screens.difficulty.DifficultyLevelScreen
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.DifficultyLevelScreenContent
+import com.tonyxlab.scribbledash.presentation.screens.draw.DrawScreen
 import com.tonyxlab.scribbledash.presentation.screens.home.HomeScreen
 import com.tonyxlab.scribbledash.presentation.screens.home.components.GameMode
 import kotlinx.serialization.Serializable
@@ -40,11 +43,16 @@ fun NavGraphBuilder.appDestinations(
 
     composable<DifficultyLevelDestination> {
 
-        DifficultyLevelScreenContent(
+        DifficultyLevelScreen(
+                modifier = modifier,
                 onClose = { navController.popBackStack() },
-                onSelectDifficultyLevel = {})
+                onSelectDifficultyLevel = { navController.navigate(DrawScreenDestination)})
     }
 
+    composable<DrawScreenDestination> {
+
+        DrawScreen(modifier = modifier, onClose = { navController.popBackStack() })
+    }
 }
 
 sealed class Destinations {
