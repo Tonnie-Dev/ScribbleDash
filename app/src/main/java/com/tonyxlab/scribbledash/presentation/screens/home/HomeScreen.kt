@@ -25,10 +25,6 @@ import com.tonyxlab.scribbledash.presentation.screens.home.components.GameModeIt
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 
 @Composable
-fun DifficultyLevelScreen() {
-}
-
-@Composable
 fun HomeScreen(
     navController: NavController,
     gameMode: GameMode,

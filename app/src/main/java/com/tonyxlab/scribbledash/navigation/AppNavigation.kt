@@ -10,7 +10,7 @@ import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.navigation.Destinations.DifficultyLevelDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.HomeScreenDestination
 import com.tonyxlab.scribbledash.presentation.core.components.EmptyScreen
-import com.tonyxlab.scribbledash.presentation.screens.home.DifficultyLevelScreen
+import com.tonyxlab.scribbledash.presentation.screens.difficulty.DifficultyLevelScreenContent
 import com.tonyxlab.scribbledash.presentation.screens.home.HomeScreen
 import com.tonyxlab.scribbledash.presentation.screens.home.components.GameMode
 import kotlinx.serialization.Serializable
@@ -22,7 +22,7 @@ fun NavGraphBuilder.appDestinations(
 ) {
     composable<Destinations.ChartDestination> {
 
-        EmptyScreen( screenText = stringResource(R.string.text_challenge_screen))
+        EmptyScreen(screenText = stringResource(R.string.text_challenge_screen))
     }
     composable<HomeScreenDestination> {
 
@@ -40,7 +40,9 @@ fun NavGraphBuilder.appDestinations(
 
     composable<DifficultyLevelDestination> {
 
-        DifficultyLevelScreen()
+        DifficultyLevelScreenContent(
+                onClose = { navController.popBackStack() },
+                onSelectDifficultyLevel = {})
     }
 
 }

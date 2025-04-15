@@ -44,6 +44,7 @@ fun DifficultyLevelScreenContent(
                 modifier = Modifier
                         .fillMaxWidth()
                         .height(MaterialTheme.spacing.spaceTwelve * 6)
+                        .padding(vertical = MaterialTheme.spacing.spaceMedium)
                      ,
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
