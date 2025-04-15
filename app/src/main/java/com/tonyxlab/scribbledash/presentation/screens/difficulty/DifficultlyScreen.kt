@@ -3,19 +3,14 @@ package com.tonyxlab.scribbledash.presentation.screens.difficulty
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.scribbledash.R
@@ -27,6 +22,24 @@ import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.Diff
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.DifficultyLevel
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 
+
+@Composable
+fun DifficultyLevelScreen(
+    onClose: () -> Unit,
+    onSelectDifficultyLevel: (DifficultyLevel) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Scaffold(containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
+
+        DifficultyLevelScreenContent(
+                modifier = modifier.padding(innerPadding),
+                onClose = onClose,
+                onSelectDifficultyLevel = onSelectDifficultyLevel
+        )
+
+    }
+}
+
 @Composable
 fun DifficultyLevelScreenContent(
     onClose: () -> Unit,
@@ -36,8 +49,7 @@ fun DifficultyLevelScreenContent(
 
     Column(
             modifier = modifier
-                    .fillMaxSize()
-                    .background(color = MaterialTheme.colorScheme.background),
+                    .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
