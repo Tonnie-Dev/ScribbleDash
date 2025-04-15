@@ -53,21 +53,21 @@ class DrawViewModel : ViewModel() {
 
     private fun startDrawing() {
 
-        Timber.i("Start Drawing")
+
         _drawingUiState.update {
 
             it.copy(
                     currentPath = DrawUiState.PathData(id = System.currentTimeMillis()),
-                    paths = emptyList()
+
             )
         }
     }
 
     private fun endDrawing() {
 
-        Timber.i("End Drawing")
 
-        val currentPathData = _drawingUiState.value.currentPath ?: return
+
+        val currentPathData = drawingUiState.value.currentPath ?: return
 
         _drawingUiState.update { it.copy(currentPath = null, paths = it.paths + currentPathData) }
     }
