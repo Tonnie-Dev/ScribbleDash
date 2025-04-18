@@ -1,5 +1,6 @@
 package com.tonyxlab.scribbledash.presentation.screens.draw.components
 
+import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,12 +25,15 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.util.fastForEach
+
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
 import com.tonyxlab.scribbledash.presentation.theme.OnSurface
+import com.tonyxlab.util.getDrawablePathDataPerVector
 import kotlin.math.abs
 
 @Composable
@@ -37,7 +41,8 @@ fun DrawingCanvas(
     currentPath: PathData?,
     paths: List<PathData>,
     onAction: (DrawingActionEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    context: Context
 ) {
     Card(
             modifier = modifier,
@@ -94,14 +99,15 @@ fun DrawingCanvas(
             ) {
 
                 drawGridLines()
+                drawRandomVectorOnCanvas(context = context)
 
-                paths.fastForEach { pathData ->
+              /*  paths.fastForEach { pathData ->
                     drawPath(path = pathData.path, color = pathData.color)
                 }
 
                 currentPath?.let {
                     drawPath(path = it.path, color = it.color)
-                }
+                }*/
             }
         }
     }
@@ -184,3 +190,31 @@ private fun DrawScope.drawPath(
             )
     )
 }
+
+
+fun DrawScope.drawRandomVectorOnCanvas(context: Context) {
+    val allVectors = getDrawablePathDataPerVector(context)
+
+    if (allVectors.isEmpty()) return
+
+    // Pick a random drawable entry
+    val randomEntry = allVectors.entries.random()
+    val pathList = randomEntry.value
+
+    // Optional: log what was chosen
+    println("Drawing vector: ${randomEntry.key} with ${pathList.size} path(s)")
+
+    // Translate to center-ish if needed (optional, for visual appeal)
+    translate(left = size.width /4, top = size.height / 4) {
+        pathList.forEach { pathData ->
+            val path = PathParser().parsePathString(pathData).toPath()
+            drawPath(
+                    path = path,
+                    color = androidx.compose.ui.graphics.Color.Black,
+                    alpha = 0.8f
+            )
+        }
+    }
+}
+
+

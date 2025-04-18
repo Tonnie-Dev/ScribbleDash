@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -102,7 +103,8 @@ fun DrawScreenContent(
             DrawingCanvas(
                     currentPath = currentPath,
                     paths = paths,
-                    onAction = onAction
+                    onAction = onAction,
+                    context = LocalContext.current
             )
             AppLabelText(
                     if (canDraw)
