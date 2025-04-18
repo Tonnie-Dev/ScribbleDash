@@ -2,12 +2,14 @@ package com.tonyxlab.scribbledash.presentation.screens.draw
 
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
+import com.tonyxlab.util.CountDown
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import timber.log.Timber
+import kotlinx.coroutines.launch
 
 class DrawViewModel : ViewModel() {
 
@@ -15,6 +17,9 @@ class DrawViewModel : ViewModel() {
     private val _drawingUiState = MutableStateFlow(DrawUiState())
     val drawingUiState = _drawingUiState.asStateFlow()
 
+    init {
+        updateCountdown()
+    }
 
     fun onEvent(event: DrawingActionEvent) {
 
@@ -123,6 +128,20 @@ class DrawViewModel : ViewModel() {
                     )
             )
         }
+    }
+
+    private fun updateCountdown() {
+
+        viewModelScope.launch {
+
+
+            val countDown = CountDown()
+            countDown.remainingSecs.collect { secs ->
+
+                _drawingUiState.update { it.copy(remainingSecs = secs) }
+            }
+        }
+
     }
 
 }

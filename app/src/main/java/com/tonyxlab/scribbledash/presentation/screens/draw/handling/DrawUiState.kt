@@ -10,7 +10,8 @@ data class DrawUiState(
     val currentPath: PathData? = null,
     val paths: List<PathData> = emptyList(),
     val buttonsState: ButtonsState = ButtonsState(),
-    val undoStack: List<PathData> = emptyList()
+    val undoStack: List<PathData> = emptyList(),
+    val remainingSecs: Int = 0
 ) {
     @Stable
     data class PathData(
