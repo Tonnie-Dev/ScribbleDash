@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
-import com.tonyxlab.util.CountDown
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -130,18 +130,16 @@ class DrawViewModel : ViewModel() {
         }
     }
 
-    private fun updateCountdown() {
+    private fun updateCountdown(secs: Int = 3) {
 
         viewModelScope.launch {
 
+            for (i in secs downTo 0) {
 
-            val countDown = CountDown()
-            countDown.remainingSecs.collect { secs ->
-
-                _drawingUiState.update { it.copy(remainingSecs = secs) }
+                _drawingUiState.update { it.copy(remainingSecs = i) }
+                delay(1_000)
             }
         }
-
     }
-
 }
+

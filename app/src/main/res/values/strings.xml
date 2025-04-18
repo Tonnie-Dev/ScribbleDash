@@ -1,6 +1,7 @@
 <resources>
 
     <!-- Custom App Strings-->
+    <string name="headline_ready_set">Ready, set…</string>
     <string name="app_name">ScribbleDash</string>
     <string name="button_text_start">START!</string>
     <string name="text_cancel">Cancel</string>
@@ -12,8 +13,11 @@
     <string name="text_beginner">Beginner</string>
     <string name="text_challenging">Challenging</string>
     <string name="text_master">Master</string>
-    <string name="text_time_to_draw">Time to Draw!</string>
+    <string name="headline_time_to_draw">Time to Draw!</string>
     <string name="button_text_clear_canvas">CLEAR CANVAS</string>
+    <string name="text_example">Example</string>
+    <string name="text_your_drawing">Your Drawing</string>
+    <string name="text_seconds_left">%d  seconds left</string>
 
     <!--  Oops - Meh Feedback  -->
     <string name="feedback_oops_1">Looks like Picasso had a rough day!</string>
@@ -48,6 +52,7 @@
     <string name="feedback_woohoo_8">You\'ve got skills! I\'m starting to think you might be a wizard with that pencil!</string>
     <string name="feedback_woohoo_9">This drawing deserves its own fan club! Can I be the president?</string>
     <string name="feedback_woohoo_10">Is there a gallery nearby? Because this masterpiece needs to be on display!</string>
+
 
 
 </resources>

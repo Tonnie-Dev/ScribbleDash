@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,6 +24,7 @@ import com.tonyxlab.scribbledash.presentation.core.components.AppButton
 import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeadlineText
 import com.tonyxlab.scribbledash.presentation.core.components.AppIcon
+import com.tonyxlab.scribbledash.presentation.core.components.AppLabelText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.draw.components.DrawingCanvas
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
@@ -28,7 +33,7 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActio
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.scribbledash.presentation.theme.Success
 import org.koin.androidx.compose.koinViewModel
-
+import timber.log.Timber
 
 @Composable
 fun DrawScreen(
@@ -43,6 +48,7 @@ fun DrawScreen(
 
         DrawScreenContent(
                 modifier = modifier.padding(innerPadding),
+                remainingSecs = state.remainingSecs,
                 currentPath = state.currentPath,
                 paths = state.paths,
                 onClose = onClose,
@@ -50,7 +56,6 @@ fun DrawScreen(
                 onAction = viewModel::onEvent
         )
     }
-
 }
 
 @Composable
@@ -60,8 +65,14 @@ fun DrawScreenContent(
     onClose: () -> Unit,
     onAction: (DrawingActionEvent) -> Unit,
     modifier: Modifier = Modifier,
-    buttonsState: DrawUiState.ButtonsState = DrawUiState.ButtonsState()
+    buttonsState: DrawUiState.ButtonsState = DrawUiState.ButtonsState(),
+    remainingSecs: Int
 ) {
+
+   val canDraw by remember(remainingSecs) {
+
+        derivedStateOf { remainingSecs < 1 }
+    }
 
     Column(
             modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
@@ -77,35 +88,55 @@ fun DrawScreenContent(
                         bottom = MaterialTheme.spacing.spaceTwelve * 4,
                 ),
                 textStyle = MaterialTheme.typography.displayMedium,
-                text = stringResource(R.string.text_time_to_draw)
+                text = if (canDraw)
+                    stringResource(R.string.headline_time_to_draw)
+                else
+                    stringResource(R.string.headline_ready_set)
         )
 
-        DrawingCanvas(
-                modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceOneHundredFifty),
-                currentPath = currentPath,
-                paths = paths,
-                onAction = onAction
-        )
-
-        Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)) {
-
-            AppIcon(
-                    enabled = buttonsState.undoButtonEnabled,
-                    icon = R.drawable.ic_reply,
-                    onClick = { onAction(DrawingActionEvent.OnUnDo) })
-
-            AppIcon(
-                    enabled = buttonsState.redoButtonEnabled,
-                    icon = R.drawable.ic_forward,
-                    onClick = { onAction(DrawingActionEvent.OnRedo) }
+        Column(
+                modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceOneTwentyEight),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceDoubleDp)
+        ) {
+            DrawingCanvas(
+                    currentPath = currentPath,
+                    paths = paths,
+                    onAction = onAction
             )
-            AppButton(
-                    modifier = Modifier.height(MaterialTheme.spacing.spaceExtraLarge),
-                    enabled = buttonsState.clearButtonEnabled,
-                    buttonText = stringResource(R.string.button_text_clear_canvas),
-                    contentColor = Success,
-                    onClick = { onAction(DrawingActionEvent.OnClearCanvas) }
+            AppLabelText(
+                    if (canDraw)
+                        stringResource(R.string.text_your_drawing)
+                    else
+                        stringResource(R.string.text_example)
             )
+        }
+
+        if (canDraw) {
+
+            Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)) {
+
+                AppIcon(
+                        enabled = buttonsState.undoButtonEnabled,
+                        icon = R.drawable.ic_reply,
+                        onClick = { onAction(DrawingActionEvent.OnUnDo) }
+                )
+
+                AppIcon(
+                        enabled = buttonsState.redoButtonEnabled,
+                        icon = R.drawable.ic_forward,
+                        onClick = { onAction(DrawingActionEvent.OnRedo) }
+                )
+                AppButton(
+                        modifier = Modifier.height(MaterialTheme.spacing.spaceExtraLarge),
+                        enabled = buttonsState.clearButtonEnabled,
+                        buttonText = stringResource(R.string.button_text_clear_canvas),
+                        contentColor = Success,
+                        onClick = { onAction(DrawingActionEvent.OnClearCanvas) }
+                )
+            }
+        } else {
+            AppHeadlineText(text = stringResource(R.string.text_seconds_left, remainingSecs))
         }
     }
 
@@ -114,7 +145,7 @@ fun DrawScreenContent(
 
 @PreviewLightDark
 @Composable
-private fun DrawScreenContentPreview() {
+private fun DrawScreenContentWithTwoSecsPreview() {
 
     ScribbleDashTheme {
         Column(
@@ -123,6 +154,7 @@ private fun DrawScreenContentPreview() {
                         .background(MaterialTheme.colorScheme.background)
         ) {
             DrawScreenContent(
+                    remainingSecs = 2,
                     onClose = {},
                     currentPath = null,
                     paths = emptyList(),
@@ -130,7 +162,28 @@ private fun DrawScreenContentPreview() {
             )
         }
     }
+}
 
+
+@PreviewLightDark
+@Composable
+private fun DrawScreenContentWithZeroSecPreview() {
+
+    ScribbleDashTheme {
+        Column(
+                modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+        ) {
+            DrawScreenContent(
+                    remainingSecs = 0,
+                    onClose = {},
+                    currentPath = null,
+                    paths = emptyList(),
+                    onAction = {}
+            )
+        }
+    }
 }
 
 
