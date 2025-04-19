@@ -19,13 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.input.pointer.pointerInput
 
@@ -34,6 +37,7 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
 import com.tonyxlab.scribbledash.presentation.theme.OnSurface
 import com.tonyxlab.util.getDrawablePathDataPerVector
+import timber.log.Timber
 import kotlin.math.abs
 
 @Composable
@@ -98,16 +102,18 @@ fun DrawingCanvas(
 
             ) {
 
+                //drawRect(color = Color.Black.copy(alpha = 0.3f), topLeft = Offset(size.width/2, size.height/2), size = Size(15f,15f))
+
                 drawGridLines()
                 drawRandomVectorOnCanvas(context = context)
 
-              /*  paths.fastForEach { pathData ->
-                    drawPath(path = pathData.path, color = pathData.color)
-                }
+                /*  paths.fastForEach { pathData ->
+                      drawPath(path = pathData.path, color = pathData.color)
+                  }
 
-                currentPath?.let {
-                    drawPath(path = it.path, color = it.color)
-                }*/
+                  currentPath?.let {
+                      drawPath(path = it.path, color = it.color)
+                  }*/
             }
         }
     }
@@ -193,28 +199,55 @@ private fun DrawScope.drawPath(
 
 
 fun DrawScope.drawRandomVectorOnCanvas(context: Context) {
-    val allVectors = getDrawablePathDataPerVector(context)
 
+    //get a map of drawable name to its vector data
+    val allVectors = getDrawablePathDataPerVector(context)
     if (allVectors.isEmpty()) return
 
-    // Pick a random drawable entry
-    val randomEntry = allVectors.entries.random()
-    val pathList = randomEntry.value
+    //deconstruct and pick random drawable
+    val (name, vectorData) = allVectors.entries.random()
+    val (paths, vpWidth, vpHeight) = vectorData
 
-    // Optional: log what was chosen
-    println("Drawing vector: ${randomEntry.key} with ${pathList.size} path(s)")
+    if (vpWidth == 0f || vpHeight == 0f || paths.isEmpty()) return
 
-    // Translate to center-ish if needed (optional, for visual appeal)
-    translate(left = size.width /4, top = size.height / 4) {
-        pathList.forEach { pathData ->
-            val path = PathParser().parsePathString(pathData).toPath()
+    //calculate scaling factor
+    val scaleX = size.width / vpWidth
+    val scaleY = size.height / vpHeight
+    val scale = minOf(scaleX, scaleY)
+
+    //scale Width and Height
+
+    val scaledWidth = vectorData.viewportWidth * scale
+    val scaledHeight = vectorData.viewportHeight * scale
+
+    val translateX = (size.width - scaledWidth) / 2f
+    val translateY = (size.width - scaledHeight) / 2f
+
+    // center drawing on canvas
+    val offsetX = (size.width / 2f)
+    val offsetY = (size.height / 2f)
+
+    // my log
+    Timber.i("Drawing [$name] - Paths: ${paths.size}, Scale: $scale")
+    Timber.i(" ")
+
+    withTransform({
+        translate(left = translateX, top = translateY)
+        scale(scaleX = scale, scaleY = scale, pivot = Offset.Zero)
+
+    }) {
+        paths.forEach { pathData ->
+            val path = PathParser().parsePathString(pathData)
+                    .toPath()
+
             drawPath(
                     path = path,
-                    color = androidx.compose.ui.graphics.Color.Black,
-                    alpha = 0.8f
+                    color = Color.Black,
+                    style = Stroke(width = 1f) // stroke-only style
             )
         }
     }
 }
+
 
 
