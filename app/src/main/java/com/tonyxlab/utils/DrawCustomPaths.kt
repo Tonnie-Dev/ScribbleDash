@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import kotlin.math.abs
 
-private fun DrawScope.drawPath(
+ fun DrawScope.drawCustomPaths(
     path: List<Offset>,
     color: Color = Color.Black,
     thickness: Float = 10f

@@ -104,7 +104,8 @@ fun DrawScreenContent(
                     currentPath = currentPath,
                     paths = paths,
                     onAction = onAction,
-                    context = LocalContext.current
+                    context = LocalContext.current,
+                    canDraw = canDraw
             )
             AppLabelText(
                     if (canDraw)

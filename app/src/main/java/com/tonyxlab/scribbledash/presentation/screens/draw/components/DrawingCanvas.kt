@@ -18,22 +18,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.withTransform
-import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.util.fastForEach
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
-import com.tonyxlab.utils.getRawVectorPathData
-
-import timber.log.Timber
+import com.tonyxlab.utils.drawCustomPaths
+import com.tonyxlab.utils.drawGridLines
+import com.tonyxlab.utils.drawRandomVector
 
 @Composable
 fun DrawingCanvas(
+    canDraw: Boolean,
     currentPath: PathData?,
     paths: List<PathData>,
     onAction: (DrawingActionEvent) -> Unit,
@@ -89,23 +85,26 @@ fun DrawingCanvas(
                                         }
                                 )
 
-
                             }
 
             ) {
 
-                //drawRect(color = Color.Black.copy(alpha = 0.3f), topLeft = Offset(size.width/2, size.height/2), size = Size(15f,15f))
-
                 drawGridLines()
-                drawRandomVector(context = context)
 
-                /*  paths.fastForEach { pathData ->
-                      drawPath(path = pathData.path, color = pathData.color)
-                  }
+                if (canDraw) {
 
-                  currentPath?.let {
-                      drawPath(path = it.path, color = it.color)
-                  }*/
+                    paths.fastForEach { pathData ->
+                        drawCustomPaths(path = pathData.path, color = pathData.color)
+                    }
+
+                    currentPath?.let {
+                        drawCustomPaths(path = it.path, color = it.color)
+                    }
+
+                } else {
+
+                    drawRandomVector(context = context)
+                }
             }
         }
     }
@@ -116,54 +115,6 @@ fun DrawingCanvas(
 
 
 
-fun DrawScope.drawRandomVector(context: Context) {
-
-    //get a map of drawable name to its vector data
-    val allVectors = getRawVectorPathData(context)
-    if (allVectors.isEmpty()) return
-
-    //deconstruct and pick random drawable
-    val (name, vectorData) = allVectors.entries.random()
-    val (paths, vpWidth, vpHeight) = vectorData
-
-    if (vpWidth == 0f || vpHeight == 0f || paths.isEmpty()) return
-
-    //calculate scaling factor
-    val scaleX = size.width / vpWidth
-    val scaleY = size.height / vpHeight
-    val scale = minOf(scaleX, scaleY)
-
-    //scale Width and Height
-
-    val scaledWidth = vectorData.viewportWidth * scale
-    val scaledHeight = vectorData.viewportHeight * scale
-
-    val translateX = (size.width - scaledWidth) / 2f
-    val translateY = (size.width - scaledHeight) / 2f
-
-
-
-    // my log
-    Timber.i("Drawing [$name] - Paths: ${paths.size}, Scale: $scale")
-    Timber.i(" ")
-
-    withTransform({
-        translate(left = translateX, top = translateY)
-        scale(scaleX = scale, scaleY = scale, pivot = Offset.Zero)
-
-    }) {
-        paths.forEach { pathData ->
-            val path = PathParser().parsePathString(pathData)
-                    .toPath()
-
-            drawPath(
-                    path = path,
-                    color = Color.Black,
-                    style = Stroke(width = 1f) // stroke-only style
-            )
-        }
-    }
-}
 
 
 

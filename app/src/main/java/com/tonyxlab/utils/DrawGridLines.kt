@@ -4,7 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.tonyxlab.scribbledash.presentation.theme.OnSurface
 
-private fun DrawScope.drawGridLines() {
+ fun DrawScope.drawGridLines() {
 
     val canvasWidth = size.width
     val canvasHeight = size.height
