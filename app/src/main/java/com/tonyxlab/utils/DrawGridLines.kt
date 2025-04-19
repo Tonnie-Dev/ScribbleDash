@@ -3,15 +3,16 @@ package com.tonyxlab.utils
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import com.tonyxlab.scribbledash.presentation.theme.OnSurface
+import com.tonyxlab.scribbledash.presentation.theme.OnSurfaceVar
 
- fun DrawScope.drawGridLines() {
+fun DrawScope.drawGridLines() {
 
     val canvasWidth = size.width
     val canvasHeight = size.height
     val cellWidth = canvasWidth / 3
     val cellHeight = canvasHeight / 3
 
-    val gridLineColor = OnSurface
+    val gridLineColor = OnSurfaceVar
     val gridLineWidth = 1.5f
 
     // Draw 2 horizontal lines

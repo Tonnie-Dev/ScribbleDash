@@ -70,76 +70,81 @@ fun DrawScreenContent(
     remainingSecs: Int
 ) {
 
-   val canDraw by remember(remainingSecs) {
+    val canDraw by remember(remainingSecs) {
 
         derivedStateOf { remainingSecs < 1 }
     }
-
-    Column(
-            modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
-            horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
+    Column(modifier = Modifier.fillMaxSize()) {
         AppCloseIcon(
-                modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceTwelve * 4),
+                modifier = Modifier.padding(
+                        top = MaterialTheme.spacing.spaceSmall,
+                        bottom = MaterialTheme.spacing.spaceTwelve * 4
+                ),
                 onClose = onClose
         )
-        AppHeadlineText(
-                modifier = Modifier.padding(
-                        bottom = MaterialTheme.spacing.spaceTwelve * 4,
-                ),
-                textStyle = MaterialTheme.typography.displayMedium,
-                text = if (canDraw)
-                    stringResource(R.string.headline_time_to_draw)
-                else
-                    stringResource(R.string.headline_ready_set)
-        )
-
         Column(
-                modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceOneTwentyEight),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceDoubleDp)
+                modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
+                horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            DrawingCanvas(
-                    currentPath = currentPath,
-                    paths = paths,
-                    onAction = onAction,
-                    context = LocalContext.current,
-                    canDraw = canDraw
-            )
-            AppLabelText(
-                    if (canDraw)
-                        stringResource(R.string.text_your_drawing)
+
+
+            AppHeadlineText(
+                    modifier = Modifier.padding(
+                            bottom = MaterialTheme.spacing.spaceTwelve * 4,
+                    ),
+                    textStyle = MaterialTheme.typography.displayMedium,
+                    text = if (canDraw)
+                        stringResource(R.string.headline_time_to_draw)
                     else
-                        stringResource(R.string.text_example)
+                        stringResource(R.string.headline_ready_set)
             )
-        }
 
-        if (canDraw) {
-
-            Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)) {
-
-                AppIcon(
-                        enabled = buttonsState.undoButtonEnabled,
-                        icon = R.drawable.ic_reply,
-                        onClick = { onAction(DrawingActionEvent.OnUnDo) }
+            Column(
+                    modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceOneTwentyEight),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceDoubleDp)
+            ) {
+                DrawingCanvas(
+                        currentPath = currentPath,
+                        paths = paths,
+                        onAction = onAction,
+                        context = LocalContext.current,
+                        canDraw = canDraw
                 )
-
-                AppIcon(
-                        enabled = buttonsState.redoButtonEnabled,
-                        icon = R.drawable.ic_forward,
-                        onClick = { onAction(DrawingActionEvent.OnRedo) }
-                )
-                AppButton(
-                        modifier = Modifier.height(MaterialTheme.spacing.spaceExtraLarge),
-                        enabled = buttonsState.clearButtonEnabled,
-                        buttonText = stringResource(R.string.button_text_clear_canvas),
-                        contentColor = Success,
-                        onClick = { onAction(DrawingActionEvent.OnClearCanvas) }
+                AppLabelText(
+                        if (canDraw)
+                            stringResource(R.string.text_your_drawing)
+                        else
+                            stringResource(R.string.text_example)
                 )
             }
-        } else {
-            AppHeadlineText(text = stringResource(R.string.text_seconds_left, remainingSecs))
+
+            if (canDraw) {
+
+                Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)) {
+
+                    AppIcon(
+                            enabled = buttonsState.undoButtonEnabled,
+                            icon = R.drawable.ic_reply,
+                            onClick = { onAction(DrawingActionEvent.OnUnDo) }
+                    )
+
+                    AppIcon(
+                            enabled = buttonsState.redoButtonEnabled,
+                            icon = R.drawable.ic_forward,
+                            onClick = { onAction(DrawingActionEvent.OnRedo) }
+                    )
+                    AppButton(
+                            modifier = Modifier.height(MaterialTheme.spacing.spaceExtraLarge),
+                            enabled = buttonsState.clearButtonEnabled,
+                            buttonText = stringResource(R.string.button_text_clear_canvas),
+                            contentColor = Success,
+                            onClick = { onAction(DrawingActionEvent.OnClearCanvas) }
+                    )
+                }
+            } else {
+                AppHeadlineText(text = stringResource(R.string.text_seconds_left, remainingSecs))
+            }
         }
     }
 
