@@ -26,6 +26,7 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActio
 import com.tonyxlab.utils.drawCustomPaths
 import com.tonyxlab.utils.drawGridLines
 import com.tonyxlab.utils.drawRandomVector
+import com.tonyxlab.utils.thenIf
 
 @Composable
 fun DrawingCanvas(
@@ -64,28 +65,34 @@ fun DrawingCanvas(
                             .fillMaxSize()
                             .clipToBounds()
                             .background(color = MaterialTheme.colorScheme.surface)
-                            .pointerInput(true) {
-                                detectDragGestures(
-                                        onDragStart = {
-                                            onAction(DrawingActionEvent.OnStartNewPath)
-                                        },
+                            .thenIf(canDraw) {
 
-                                        onDrag = { change, _ ->
-                                            onAction(DrawingActionEvent.OnDraw(change.position))
+                                pointerInput(true) {
 
-                                        },
-                                        onDragEnd = {
-                                            onAction(DrawingActionEvent.OnEndPath)
-                                        },
+                                    detectDragGestures(
+                                            onDragStart = {
+                                                onAction(DrawingActionEvent.OnStartNewPath)
+                                            },
 
-                                        onDragCancel = {
+                                            onDrag = { change, _ ->
+                                                onAction(DrawingActionEvent.OnDraw(change.position))
 
-                                            onAction(DrawingActionEvent.OnEndPath)
+                                            },
+                                            onDragEnd = {
+                                                onAction(DrawingActionEvent.OnEndPath)
+                                            },
 
-                                        }
-                                )
+                                            onDragCancel = {
 
+                                                onAction(DrawingActionEvent.OnEndPath)
+
+                                            }
+                                    )
+
+
+                                }
                             }
+
 
             ) {
 
