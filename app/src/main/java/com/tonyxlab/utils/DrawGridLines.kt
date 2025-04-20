@@ -2,7 +2,6 @@ package com.tonyxlab.utils
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import com.tonyxlab.scribbledash.presentation.theme.OnSurface
 import com.tonyxlab.scribbledash.presentation.theme.OnSurfaceVar
 
 fun DrawScope.drawGridLines() {

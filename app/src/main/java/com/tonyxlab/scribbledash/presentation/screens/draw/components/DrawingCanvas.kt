@@ -25,12 +25,11 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
 import com.tonyxlab.utils.drawCustomPaths
 import com.tonyxlab.utils.drawGridLines
-import com.tonyxlab.utils.drawRandomVector
 import com.tonyxlab.utils.thenIf
 
 @Composable
 fun DrawingCanvas(
-    canDraw: Boolean,
+    canDraw: Boolean = true,
     currentPath: PathData?,
     paths: List<PathData>,
     onAction: (DrawingActionEvent) -> Unit,
@@ -54,7 +53,7 @@ fun DrawingCanvas(
                         .padding(MaterialTheme.spacing.spaceMedium)
                         .border(
                                 width = MaterialTheme.spacing.spaceHalfDp,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 shape = RoundedCornerShape(MaterialTheme.spacing.spaceTwelve * 2)
                         ),
                 contentAlignment = Alignment.Center
@@ -65,7 +64,7 @@ fun DrawingCanvas(
                             .fillMaxSize()
                             .clipToBounds()
                             .background(color = MaterialTheme.colorScheme.surface)
-                            .thenIf(canDraw) {
+                            .thenIf(true) {
 
                                 pointerInput(true) {
 
@@ -98,7 +97,15 @@ fun DrawingCanvas(
 
                 drawGridLines()
 
-                if (canDraw) {
+                paths.fastForEach { pathData ->
+                    drawCustomPaths(path = pathData.path, color = pathData.color)
+                }
+
+                currentPath?.let {
+                    drawCustomPaths(path = it.path, color = it.color)
+                }
+
+               /* if (canDraw) {
 
                     paths.fastForEach { pathData ->
                         drawCustomPaths(path = pathData.path, color = pathData.color)
@@ -111,7 +118,7 @@ fun DrawingCanvas(
                 } else {
 
                     drawRandomVector(context = context)
-                }
+                }*/
             }
         }
     }

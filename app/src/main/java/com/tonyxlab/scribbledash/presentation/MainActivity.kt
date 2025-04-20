@@ -1,6 +1,5 @@
 package com.tonyxlab.scribbledash.presentation
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -10,10 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.tonyxlab.scribbledash.navigation.Destinations.*
+import com.tonyxlab.scribbledash.navigation.Destinations.HomeScreenDestination
 import com.tonyxlab.scribbledash.navigation.appDestinations
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.theme.Background

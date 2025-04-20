@@ -70,10 +70,10 @@ fun DrawScreenContent(
     remainingSecs: Int
 ) {
 
-    val canDraw by remember(remainingSecs) {
+    val canDraw = true/* by remember(remainingSecs) {
 
         derivedStateOf { remainingSecs < 1 }
-    }
+    }*/
     Column(modifier = Modifier.fillMaxSize()) {
         AppCloseIcon(
                 modifier = Modifier.padding(
@@ -142,9 +142,9 @@ fun DrawScreenContent(
                             onClick = { onAction(DrawingActionEvent.OnClearCanvas) }
                     )
                 }
-            } else {
+            } /*else {
                 AppHeadlineText(text = stringResource(R.string.text_seconds_left, remainingSecs))
-            }
+            }*/
         }
     }
 
