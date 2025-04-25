@@ -3,17 +3,19 @@ package com.tonyxlab.scribbledash.presentation.screens.draw
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,7 +36,6 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActio
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.scribbledash.presentation.theme.Success
 import org.koin.androidx.compose.koinViewModel
-import timber.log.Timber
 
 @Composable
 fun DrawScreen(
@@ -121,25 +122,34 @@ fun DrawScreenContent(
 
             if (canDraw) {
 
-                Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)) {
+                Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                ) {
 
-                    AppIcon(
-                            enabled = buttonsState.undoButtonEnabled,
-                            icon = R.drawable.ic_reply,
-                            onClick = { onAction(DrawingActionEvent.OnUnDo) }
-                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)) {
+                        AppIcon(
+                                enabled = buttonsState.undoButtonEnabled,
+                                icon = R.drawable.ic_reply,
+                                onClick = { onAction(DrawingActionEvent.OnUnDo) }
+                        )
 
-                    AppIcon(
-                            enabled = buttonsState.redoButtonEnabled,
-                            icon = R.drawable.ic_forward,
-                            onClick = { onAction(DrawingActionEvent.OnRedo) }
-                    )
+                        AppIcon(
+                                enabled = buttonsState.redoButtonEnabled,
+                                icon = R.drawable.ic_forward,
+                                onClick = { onAction(DrawingActionEvent.OnRedo) }
+                        )
+                    }
                     AppButton(
-                            modifier = Modifier.height(MaterialTheme.spacing.spaceExtraLarge),
+                            modifier = Modifier
+                                    .height(MaterialTheme.spacing.spaceExtraLarge)
+                                    .width(
+                                            IntrinsicSize.Min
+                                    ),
                             enabled = buttonsState.clearButtonEnabled,
-                            buttonText = stringResource(R.string.button_text_clear_canvas),
+                            buttonText = stringResource(R.string.button_text_done),
                             contentColor = Success,
-                            onClick = { onAction(DrawingActionEvent.OnClearCanvas) }
+                            onClick = { onAction(DrawingActionEvent.OnSubmitDrawing) }
                     )
                 }
             } else {

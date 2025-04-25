@@ -6,7 +6,7 @@ sealed interface DrawingActionEvent {
     data object OnStartNewPath : DrawingActionEvent
     data class OnDraw(val offset: Offset) : DrawingActionEvent
     data object OnEndPath : DrawingActionEvent
-    data object OnClearCanvas : DrawingActionEvent
+    data object OnSubmitDrawing : DrawingActionEvent
     data object OnUnDo : DrawingActionEvent
     data object OnRedo : DrawingActionEvent
 }

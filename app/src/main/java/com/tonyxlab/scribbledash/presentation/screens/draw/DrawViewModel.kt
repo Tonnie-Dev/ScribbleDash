@@ -29,7 +29,7 @@ class DrawViewModel : ViewModel() {
             DrawingActionEvent.OnEndPath -> endDrawing()
             DrawingActionEvent.OnUnDo -> unDoDrawing()
             DrawingActionEvent.OnRedo -> reDoDrawing()
-            DrawingActionEvent.OnClearCanvas -> clearCanvas()
+            DrawingActionEvent.OnSubmitDrawing -> clearCanvas()
         }
     }
 
