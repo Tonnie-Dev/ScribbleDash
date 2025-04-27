@@ -28,7 +28,7 @@ import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 
 @Composable
 fun AppButton(
-    contentColor: Color,
+    containerColor: Color,
     modifier: Modifier = Modifier,
     buttonText: String = stringResource(R.string.button_text_start),
     radius: Dp = MaterialTheme.spacing.spaceMedium,
@@ -43,7 +43,7 @@ fun AppButton(
                             shape = RoundedCornerShape(radius)
                     )
                     .background(
-                            color = if (enabled) contentColor else MaterialTheme.colorScheme.inverseSurface,
+                            color = if (enabled) containerColor else MaterialTheme.colorScheme.inverseSurface,
                             shape = RoundedCornerShape(radius)
                     )
                     .border(
@@ -86,16 +86,16 @@ private fun AppButtonPreview() {
         ) {
 
             AppButton(
-                    contentColor = MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.primary,
                     onClick = {}
             )
 
             AppButton(
-                    contentColor = Success,
+                    containerColor = Success,
                     onClick = {}
             )
             AppButton(
-                    contentColor = Success,
+                    containerColor = Success,
                     enabled = false,
                     onClick = {}
             )

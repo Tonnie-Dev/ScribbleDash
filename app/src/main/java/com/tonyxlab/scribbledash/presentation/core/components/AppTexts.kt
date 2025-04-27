@@ -19,7 +19,7 @@ import com.tonyxlab.scribbledash.presentation.theme.OnBackgroundVar
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 
 @Composable
-fun AppHeadlineText(
+fun AppHeaderText(
     text: String,
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onBackground,
@@ -84,15 +84,15 @@ private fun AppHeadlineTextPreview() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceMedium)
         ) {
-            AppHeadlineText(
+            AppHeaderText(
                     text = "ScribbleDash",
                     textStyle = MaterialTheme.typography.headlineMedium
             )
-            AppHeadlineText(
+            AppHeaderText(
                     text = "Start Drawing!",
                     textStyle = MaterialTheme.typography.displayMedium
             )
-            AppHeadlineText(
+            AppHeaderText(
                     text = "Time to draw!",
                     textStyle = MaterialTheme.typography.displayMedium
             )

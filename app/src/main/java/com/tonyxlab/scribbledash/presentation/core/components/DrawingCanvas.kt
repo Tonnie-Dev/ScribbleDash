@@ -1,6 +1,5 @@
-package com.tonyxlab.scribbledash.presentation.screens.draw.components
+package com.tonyxlab.scribbledash.presentation.core.components
 
-import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,24 +17,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.util.fastForEach
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
-import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
-import com.tonyxlab.utils.drawCustomPaths
 import com.tonyxlab.utils.drawGridLines
-import com.tonyxlab.utils.drawRandomVector
 import com.tonyxlab.utils.thenIf
 
 @Composable
 fun DrawingCanvas(
-    canDraw: Boolean,
-    currentPath: PathData?,
-    paths: List<PathData>,
-    onAction: (DrawingActionEvent) -> Unit,
     modifier: Modifier = Modifier,
-    context: Context
+    onAction: ((DrawingActionEvent) -> Unit)? = null,
+    canDraw: Boolean = false,
+    onCustomDraw: (DrawScope.() -> Unit)? = null
 ) {
     Card(
             modifier = modifier,
@@ -65,61 +59,32 @@ fun DrawingCanvas(
                             .fillMaxSize()
                             .clipToBounds()
                             .background(color = MaterialTheme.colorScheme.surface)
-                            .thenIf(true) {
+                            .thenIf(canDraw) {
 
                                 pointerInput(true) {
 
                                     detectDragGestures(
                                             onDragStart = {
-                                                onAction(DrawingActionEvent.OnStartNewPath)
-                                            },
+                                                onAction?.invoke(DrawingActionEvent.OnStartNewPath)
 
+                                            },
                                             onDrag = { change, _ ->
-                                                onAction(DrawingActionEvent.OnDraw(change.position))
+                                                onAction?.invoke(DrawingActionEvent.OnDraw(change.position))
 
                                             },
                                             onDragEnd = {
-                                                onAction(DrawingActionEvent.OnEndPath)
+                                                onAction?.invoke(DrawingActionEvent.OnEndPath)
                                             },
-
                                             onDragCancel = {
-
-                                                onAction(DrawingActionEvent.OnEndPath)
-
+                                                onAction?.invoke(DrawingActionEvent.OnEndPath)
                                             }
                                     )
-
-
                                 }
                             }
 
-
             ) {
-
                 drawGridLines()
-
-                paths.fastForEach { pathData ->
-                    drawCustomPaths(path = pathData.path, color = pathData.color)
-                }
-
-                currentPath?.let {
-                    drawCustomPaths(path = it.path, color = it.color)
-                }
-
-                if (canDraw) {
-
-                    paths.fastForEach { pathData ->
-                        drawCustomPaths(path = pathData.path, color = pathData.color)
-                    }
-
-                    currentPath?.let {
-                        drawCustomPaths(path = it.path, color = it.color)
-                    }
-
-                } else {
-
-                    drawRandomVector(context = context)
-                }
+                onCustomDraw?.invoke(this)
             }
         }
     }

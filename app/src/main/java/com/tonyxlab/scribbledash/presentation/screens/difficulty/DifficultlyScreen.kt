@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.presentation.core.components.AppBodyText
 import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
-import com.tonyxlab.scribbledash.presentation.core.components.AppHeadlineText
+import com.tonyxlab.scribbledash.presentation.core.components.AppHeaderText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.DifficultyItems
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.DifficultyLevel
@@ -67,7 +67,7 @@ fun DifficultyLevelScreenContent(
         ) {
 
 
-            AppHeadlineText(
+            AppHeaderText(
                     text = stringResource(id = R.string.button_text_start_drawing),
                     textStyle = MaterialTheme.typography.displayMedium
             )

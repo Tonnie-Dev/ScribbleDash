@@ -13,28 +13,28 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.presentation.core.components.AppButton
 import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
-import com.tonyxlab.scribbledash.presentation.core.components.AppHeadlineText
+import com.tonyxlab.scribbledash.presentation.core.components.AppHeaderText
 import com.tonyxlab.scribbledash.presentation.core.components.AppIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppLabelText
+import com.tonyxlab.scribbledash.presentation.core.components.DrawingCanvas
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
-import com.tonyxlab.scribbledash.presentation.screens.draw.components.DrawingCanvas
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.scribbledash.presentation.theme.Success
+import com.tonyxlab.utils.drawCustomPaths
+import com.tonyxlab.utils.drawRandomVector
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -71,10 +71,13 @@ fun DrawScreenContent(
     remainingSecs: Int
 ) {
 
-    val canDraw by remember(remainingSecs) {
 
-        derivedStateOf { remainingSecs < 1 }
-    }
+
+    val canDraw = remainingSecs <1
+    val context = LocalContext.current
+
+
+
     Column(modifier = Modifier.fillMaxSize()) {
         AppCloseIcon(
                 modifier = Modifier.padding(
@@ -89,7 +92,7 @@ fun DrawScreenContent(
         ) {
 
 
-            AppHeadlineText(
+            AppHeaderText(
                     modifier = Modifier.padding(
                             bottom = MaterialTheme.spacing.spaceTwelve * 4,
                     ),
@@ -106,11 +109,36 @@ fun DrawScreenContent(
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceDoubleDp)
             ) {
                 DrawingCanvas(
-                        currentPath = currentPath,
-                        paths = paths,
+
                         onAction = onAction,
-                        context = LocalContext.current,
-                        canDraw = canDraw
+
+                        canDraw = canDraw,
+                        onCustomDraw = {
+                            paths.fastForEach { pathData ->
+                                drawCustomPaths(path = pathData.path, color = pathData.color)
+                            }
+
+                            currentPath?.let {
+                                drawCustomPaths(path = it.path, color = it.color)
+                            }
+
+                            if (canDraw) {
+
+                                paths.fastForEach { pathData ->
+                                    drawCustomPaths(path = pathData.path, color = pathData.color)
+                                }
+
+                                currentPath?.let {
+                                    drawCustomPaths(path = it.path, color = it.color)
+                                }
+
+                            } else {
+
+                                drawRandomVector(context = context)
+                            }
+
+                        }
+
                 )
                 AppLabelText(
                         if (canDraw)
@@ -148,12 +176,12 @@ fun DrawScreenContent(
                                     ),
                             enabled = buttonsState.clearButtonEnabled,
                             buttonText = stringResource(R.string.button_text_done),
-                            contentColor = Success,
+                            containerColor = Success,
                             onClick = { onAction(DrawingActionEvent.OnSubmitDrawing) }
                     )
                 }
             } else {
-                AppHeadlineText(text = stringResource(R.string.text_seconds_left, remainingSecs))
+                AppHeaderText(text = stringResource(R.string.text_seconds_left, remainingSecs))
             }
         }
     }

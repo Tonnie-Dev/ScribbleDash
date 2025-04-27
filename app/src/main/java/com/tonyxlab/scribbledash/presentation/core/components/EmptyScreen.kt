@@ -35,7 +35,7 @@ fun EmptyScreen(
                 verticalArrangement = Arrangement.Center
         ) {
 
-            AppHeadlineText(text = screenText)
+            AppHeaderText(text = screenText)
 
         }
     }

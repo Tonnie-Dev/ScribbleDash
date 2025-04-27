@@ -18,6 +18,7 @@
     <string name="button_text_clear_canvas">CLEAR CANVAS</string>
     <string name="text_example">Example</string>
     <string name="text_your_drawing">Your Drawing</string>
+    <string name="text_drawing">Drawing</string>
     <string name="text_seconds_left">%d  seconds left</string>
 
     <!--  Oops - Meh Feedback  -->
@@ -53,7 +54,7 @@
     <string name="feedback_woohoo_8">You\'ve got skills! I\'m starting to think you might be a wizard with that pencil!</string>
     <string name="feedback_woohoo_9">This drawing deserves its own fan club! Can I be the president?</string>
     <string name="feedback_woohoo_10">Is there a gallery nearby? Because this masterpiece needs to be on display!</string>
-
+    <string name="button_text_try_again">TRY AGAIN</string>
 
 
 </resources>

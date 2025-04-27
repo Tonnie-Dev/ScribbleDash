@@ -17,7 +17,7 @@ import androidx.navigation.NavController
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.presentation.core.components.AppBodyText
 import com.tonyxlab.scribbledash.presentation.core.components.AppBottomBar
-import com.tonyxlab.scribbledash.presentation.core.components.AppHeadlineText
+import com.tonyxlab.scribbledash.presentation.core.components.AppHeaderText
 import com.tonyxlab.scribbledash.presentation.core.utils.GradientScheme
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.home.components.GameMode
@@ -66,7 +66,7 @@ fun HomeScreenContent(
 
     ) {
 
-        AppHeadlineText(
+        AppHeaderText(
                 modifier = Modifier.padding(
                         start = MaterialTheme.spacing.spaceMedium,
                         end = MaterialTheme.spacing.spaceMedium,
@@ -87,7 +87,7 @@ fun HomeScreenContent(
         ) {
 
 
-            AppHeadlineText(
+            AppHeaderText(
                     text = stringResource(id = R.string.button_text_start_drawing),
                     textStyle = MaterialTheme.typography.displayMedium
             )
