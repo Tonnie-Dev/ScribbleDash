@@ -1,5 +1,6 @@
 package com.tonyxlab.scribbledash.presentation.screens.draw
 
+import android.R.attr.viewportWidth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,8 +41,10 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun DrawScreen(
     onClose: () -> Unit,
+    onSubmit:() -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: DrawViewModel = koinViewModel()
+    viewModel: DrawViewModel = koinViewModel(),
+
 ) {
 
     val state = viewModel.drawingUiState.collectAsStateWithLifecycle().value
@@ -55,6 +58,9 @@ fun DrawScreen(
                 paths = state.paths,
                 onClose = onClose,
                 buttonsState = state.buttonsState,
+                vectorPaths = state.currentSvgPath.paths,
+                viewportWidth = state.currentSvgPath.viewportWidth,
+                viewportHeight = state.currentSvgPath.viewportHeight,
                 onAction = viewModel::onEvent
         )
     }
@@ -64,6 +70,9 @@ fun DrawScreen(
 fun DrawScreenContent(
     currentPath: PathData?,
     paths: List<PathData>,
+    vectorPaths: List<String>,
+    viewportWidth: Float,
+    viewportHeight: Float,
     onClose: () -> Unit,
     onAction: (DrawingActionEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -72,8 +81,7 @@ fun DrawScreenContent(
 ) {
 
 
-
-    val canDraw = remainingSecs <1
+    val canDraw = remainingSecs < 1
     val context = LocalContext.current
 
 
@@ -134,7 +142,11 @@ fun DrawScreenContent(
 
                             } else {
 
-                                drawRandomVector(context = context)
+                                drawRandomVector(
+                                        vectorPaths = vectorPaths,
+                                        viewportWidth = viewportWidth,
+                                        viewportHeight = viewportHeight
+                                )
                             }
 
                         }
@@ -174,7 +186,7 @@ fun DrawScreenContent(
                                     .width(
                                             IntrinsicSize.Min
                                     ),
-                            enabled = buttonsState.clearButtonEnabled,
+                            enabled = buttonsState.submitButtonEnabled,
                             buttonText = stringResource(R.string.button_text_done),
                             containerColor = Success,
                             onClick = { onAction(DrawingActionEvent.OnSubmitDrawing) }
@@ -204,6 +216,9 @@ private fun DrawScreenContentWithTwoSecsPreview() {
                     onClose = {},
                     currentPath = null,
                     paths = emptyList(),
+                    vectorPaths = emptyList(),
+                    viewportWidth = 0f,
+                    viewportHeight = 0f,
                     onAction = {}
             )
         }
@@ -226,6 +241,9 @@ private fun DrawScreenContentWithZeroSecPreview() {
                     onClose = {},
                     currentPath = null,
                     paths = emptyList(),
+                    vectorPaths = emptyList(),
+                    viewportWidth = 0f,
+                    viewportHeight = 0f,
                     onAction = {}
             )
         }
