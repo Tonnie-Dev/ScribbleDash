@@ -1,17 +1,28 @@
 package com.tonyxlab.scribbledash.presentation.screens.draw
 
+import android.content.Context
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
+import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.KoinApplication.Companion.init
 
-class DrawViewModel : ViewModel() {
+class DrawViewModel(
+    private val context: Context,
+    private val randomVectorProvider: (Context) -> RandomVectorData
+
+
+) : ViewModel(
+
+
+) {
 
 
     private val _drawingUiState = MutableStateFlow(DrawUiState())
@@ -19,6 +30,7 @@ class DrawViewModel : ViewModel() {
 
     init {
         updateCountdown()
+        pickNewRandomVector()
     }
 
     fun onEvent(event: DrawingActionEvent) {
@@ -70,6 +82,7 @@ class DrawViewModel : ViewModel() {
         }
 
         updateButtonsState()
+
     }
 
     private fun unDoDrawing() {
@@ -124,7 +137,7 @@ class DrawViewModel : ViewModel() {
                     buttonsState = it.buttonsState.copy(
                             undoButtonEnabled = it.paths.isNotEmpty(),
                             redoButtonEnabled = it.undoStack.isNotEmpty(),
-                            clearButtonEnabled = it.paths.isNotEmpty() || it.currentPath != null
+                            submitButtonEnabled = it.paths.isNotEmpty() || it.currentPath != null
                     )
             )
         }
@@ -141,5 +154,11 @@ class DrawViewModel : ViewModel() {
             }
         }
     }
+
+    fun pickNewRandomVector() {
+        _drawingUiState.update { it.copy(currentSvgPath = randomVectorProvider(context)) }
+    }
+
+
 }
 
