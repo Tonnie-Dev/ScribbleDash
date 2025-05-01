@@ -4,44 +4,44 @@ import android.content.Context
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
+import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
-import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
+import com.tonyxlab.utils.toSvgPathStrings
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.KoinApplication.Companion.init
 
 class DrawViewModel(
     private val context: Context,
     private val randomVectorProvider: (Context) -> RandomVectorData
-
-
-) : ViewModel(
-
-
-) {
-
+) : ViewModel() {
 
     private val _drawingUiState = MutableStateFlow(DrawUiState())
     val drawingUiState = _drawingUiState.asStateFlow()
+
+    private val _actionEvent = Channel<DrawActionEvent>()
+    val actionEvent = _actionEvent.receiveAsFlow()
 
     init {
         updateCountdown()
         pickNewRandomVector()
     }
 
-    fun onEvent(event: DrawingActionEvent) {
+    fun onEvent(event: DrawUiEvent) {
 
         when (event) {
-            is DrawingActionEvent.OnDraw -> onDraw(event.offset)
-            DrawingActionEvent.OnStartNewPath -> startDrawing()
-            DrawingActionEvent.OnEndPath -> endDrawing()
-            DrawingActionEvent.OnUnDo -> unDoDrawing()
-            DrawingActionEvent.OnRedo -> reDoDrawing()
-            DrawingActionEvent.OnSubmitDrawing -> clearCanvas()
+            is DrawUiEvent.OnDraw -> onDraw(event.offset)
+            DrawUiEvent.OnStartNewPath -> startDrawing()
+            DrawUiEvent.OnEndPath -> endDrawing()
+            DrawUiEvent.OnUnDo -> unDoDrawing()
+            DrawUiEvent.OnRedo -> reDoDrawing()
+            is DrawUiEvent.OnSubmitDrawing -> submitDrawing()
         }
     }
 
@@ -117,18 +117,31 @@ class DrawViewModel(
         }
     }
 
-    private fun clearCanvas() {
+    private fun submitDrawing() {
+
+        viewModelScope.launch {
 
 
-        _drawingUiState.update {
-            it.copy(
-                    currentPath = null,
-                    paths = emptyList(),
-                    undoStack = emptyList()
+            _actionEvent.send(
+                    DrawActionEvent.NavigateToPreviewScreen(
+                            sampleSvgPathData = _drawingUiState.value.currentSvgPath.paths,
+                            userPathData = _drawingUiState.value.paths.toSvgPathStrings(),
+                            viewPortWidth = _drawingUiState.value.currentSvgPath.viewportWidth,
+                            viewPortHeight = _drawingUiState.value.currentSvgPath.viewportHeight,
+                    )
             )
         }
 
-        updateButtonsState()
+
+        /* _drawingUiState.update {
+             it.copy(
+                     currentPath = null,
+                     paths = emptyList(),
+                     undoStack = emptyList()
+             )
+         }
+
+         updateButtonsState()*/
     }
 
     private fun updateButtonsState() {
