@@ -12,8 +12,8 @@ import kotlin.collections.component2
 
 fun DrawScope.drawRandomVector(
     vectorPaths: List<String>,
-    viewportWidth: Float,
-    viewportHeight: Float
+    viewportWidth: Float =0f,
+    viewportHeight: Float = 0f
 ) {
     if (vectorPaths.isEmpty() || viewportWidth == 0f || viewportHeight == 0f) return
 
