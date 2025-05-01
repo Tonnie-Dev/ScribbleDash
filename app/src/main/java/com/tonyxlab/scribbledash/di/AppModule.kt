@@ -1,14 +1,10 @@
 package com.tonyxlab.scribbledash.di
 
-import android.R.attr.viewportHeight
-import android.R.attr.viewportWidth
-import android.app.Application
 import android.content.Context
 import com.tonyxlab.scribbledash.presentation.screens.draw.DrawViewModel
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
 import com.tonyxlab.scribbledash.presentation.screens.preview.PreviewViewModel
 import com.tonyxlab.utils.getRawVectorPathData
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
