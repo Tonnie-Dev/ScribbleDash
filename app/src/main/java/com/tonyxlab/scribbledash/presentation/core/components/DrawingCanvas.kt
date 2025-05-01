@@ -20,14 +20,14 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
-import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
+import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.utils.drawGridLines
 import com.tonyxlab.utils.thenIf
 
 @Composable
 fun DrawingCanvas(
     modifier: Modifier = Modifier,
-    onAction: ((DrawingActionEvent) -> Unit)? = null,
+    onAction: ((DrawUiEvent) -> Unit)? = null,
     canDraw: Boolean = false,
     onCustomDraw: (DrawScope.() -> Unit)? = null
 ) {
@@ -65,18 +65,18 @@ fun DrawingCanvas(
 
                                     detectDragGestures(
                                             onDragStart = {
-                                                onAction?.invoke(DrawingActionEvent.OnStartNewPath)
+                                                onAction?.invoke(DrawUiEvent.OnStartNewPath)
 
                                             },
                                             onDrag = { change, _ ->
-                                                onAction?.invoke(DrawingActionEvent.OnDraw(change.position))
+                                                onAction?.invoke(DrawUiEvent.OnDraw(change.position))
 
                                             },
                                             onDragEnd = {
-                                                onAction?.invoke(DrawingActionEvent.OnEndPath)
+                                                onAction?.invoke(DrawUiEvent.OnEndPath)
                                             },
                                             onDragCancel = {
-                                                onAction?.invoke(DrawingActionEvent.OnEndPath)
+                                                onAction?.invoke(DrawUiEvent.OnEndPath)
                                             }
                                     )
                                 }
