@@ -8,14 +8,14 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.tonyxlab.scribbledash.R
+import com.tonyxlab.scribbledash.navigation.Destinations.ChartDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.DifficultyLevelDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.DrawScreenDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.HomeScreenDestination
+import com.tonyxlab.scribbledash.navigation.Destinations.PreviewDestination
 import com.tonyxlab.scribbledash.presentation.core.components.EmptyScreen
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.DifficultyLevelScreen
-import com.tonyxlab.scribbledash.presentation.screens.difficulty.DifficultyLevelScreenContent
 import com.tonyxlab.scribbledash.presentation.screens.draw.DrawScreen
-import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.home.HomeScreen
 import com.tonyxlab.scribbledash.presentation.screens.home.components.GameMode
 import com.tonyxlab.scribbledash.presentation.screens.preview.PreviewScreen
@@ -26,7 +26,7 @@ fun NavGraphBuilder.appDestinations(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    composable<Destinations.ChartDestination> {
+    composable<ChartDestination> {
 
         EmptyScreen(screenText = stringResource(R.string.text_challenge_screen))
     }
@@ -57,17 +57,27 @@ fun NavGraphBuilder.appDestinations(
         DrawScreen(
                 modifier = modifier,
                 onClose = { navController.popBackStack() },
-                onSubmit = { /*navController.navigate(Destinations.PreviewDestination())*/}
+                onSubmit = { sampleSvgStrings, userPathStrings, viewPortWidth, viewPortHeight ->
+
+
+                    navController.navigate(
+                            PreviewDestination(
+                                    sampleSvgStrings = sampleSvgStrings,
+                                    userPathStrings = userPathStrings,
+                                    viewPortWidth = viewPortWidth,
+                                    viewPortHeight = viewPortHeight
+                            )
+                    )
+                }
 
         )
     }
 
-   /* composable < Destinations.PreviewDestination>{backStack ->
+    composable<PreviewDestination> { backStack ->
 
-        val data: DrawUiState.PathData = backStack.toRoute()
 
-        PreviewScreen(modifier = modifier)
-    }*/
+        PreviewScreen(modifier = modifier, onClose = { navController.popBackStack() })
+    }
 }
 
 sealed class Destinations {
@@ -86,9 +96,10 @@ sealed class Destinations {
 
     @Serializable
     data class PreviewDestination(
-        val score: Int,
-        val sampleSvgData: List<String>,
-        val pathData: List<DrawUiState.PathData>
+        val sampleSvgStrings: List<String>,
+        val userPathStrings: List<String>,
+        val viewPortWidth: Float,
+        val viewPortHeight: Float,
     ) : Destinations()
 
 }
@@ -103,7 +114,7 @@ enum class BottomNavigationOptions(
     CHART(
             label = "Chart",
             icon = R.drawable.ic_chart,
-            route = Destinations.ChartDestination
+            route = ChartDestination
     ),
 
     HOME(
@@ -112,3 +123,5 @@ enum class BottomNavigationOptions(
             route = HomeScreenDestination
     ),
 }
+
+
