@@ -1,6 +1,5 @@
 package com.tonyxlab.scribbledash.presentation.screens.draw
 
-import android.R.attr.viewportWidth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,25 +29,44 @@ import com.tonyxlab.scribbledash.presentation.core.components.AppIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppLabelText
 import com.tonyxlab.scribbledash.presentation.core.components.DrawingCanvas
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
+import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
-import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawingActionEvent
+import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.scribbledash.presentation.theme.Success
 import com.tonyxlab.utils.drawCustomPaths
 import com.tonyxlab.utils.drawRandomVector
+import com.tonyxlab.utils.toSvgPathStrings
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DrawScreen(
     onClose: () -> Unit,
-    onSubmit:() -> Unit,
+    onSubmit: (List<String>, List<String>, Float, Float) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DrawViewModel = koinViewModel(),
 
-) {
+    ) {
 
     val state = viewModel.drawingUiState.collectAsStateWithLifecycle().value
+
+    LaunchedEffect(true) {
+
+        viewModel.actionEvent.collect {
+
+            when (it) {
+
+                is DrawActionEvent.NavigateToPreviewScreen -> onSubmit(
+                        it.sampleSvgPathData,
+                        it.userPathData,
+                        it.viewPortWidth,
+                        it.viewPortHeight
+                )
+            }
+        }
+
+    }
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
 
@@ -58,9 +77,9 @@ fun DrawScreen(
                 paths = state.paths,
                 onClose = onClose,
                 buttonsState = state.buttonsState,
-                vectorPaths = state.currentSvgPath.paths,
-                viewportWidth = state.currentSvgPath.viewportWidth,
-                viewportHeight = state.currentSvgPath.viewportHeight,
+                sampleSvgPath = state.currentSvgPath.paths,
+                viewPortWidth = state.currentSvgPath.viewportWidth,
+                viewPortHeight = state.currentSvgPath.viewportHeight,
                 onAction = viewModel::onEvent
         )
     }
@@ -70,11 +89,11 @@ fun DrawScreen(
 fun DrawScreenContent(
     currentPath: PathData?,
     paths: List<PathData>,
-    vectorPaths: List<String>,
-    viewportWidth: Float,
-    viewportHeight: Float,
+    sampleSvgPath: List<String>,
+    viewPortWidth: Float,
+    viewPortHeight: Float,
     onClose: () -> Unit,
-    onAction: (DrawingActionEvent) -> Unit,
+    onAction: (DrawUiEvent) -> Unit,
     modifier: Modifier = Modifier,
     buttonsState: DrawUiState.ButtonsState = DrawUiState.ButtonsState(),
     remainingSecs: Int
@@ -143,9 +162,9 @@ fun DrawScreenContent(
                             } else {
 
                                 drawRandomVector(
-                                        vectorPaths = vectorPaths,
-                                        viewportWidth = viewportWidth,
-                                        viewportHeight = viewportHeight
+                                        vectorPaths = sampleSvgPath,
+                                        viewportWidth = viewPortWidth,
+                                        viewportHeight = viewPortHeight
                                 )
                             }
 
@@ -171,13 +190,13 @@ fun DrawScreenContent(
                         AppIcon(
                                 enabled = buttonsState.undoButtonEnabled,
                                 icon = R.drawable.ic_reply,
-                                onClick = { onAction(DrawingActionEvent.OnUnDo) }
+                                onClick = { onAction(DrawUiEvent.OnUnDo) }
                         )
 
                         AppIcon(
                                 enabled = buttonsState.redoButtonEnabled,
                                 icon = R.drawable.ic_forward,
-                                onClick = { onAction(DrawingActionEvent.OnRedo) }
+                                onClick = { onAction(DrawUiEvent.OnRedo) }
                         )
                     }
                     AppButton(
@@ -189,7 +208,17 @@ fun DrawScreenContent(
                             enabled = buttonsState.submitButtonEnabled,
                             buttonText = stringResource(R.string.button_text_done),
                             containerColor = Success,
-                            onClick = { onAction(DrawingActionEvent.OnSubmitDrawing) }
+                            onClick = {
+
+                                onAction(
+                                        DrawUiEvent.OnSubmitDrawing(
+                                                sampleSvgPathData = sampleSvgPath,
+                                                userPathData = paths.toSvgPathStrings(),
+                                                viewPortWidth = viewPortWidth,
+                                                viewPortHeight = viewPortHeight
+                                        )
+                                )
+                            }
                     )
                 }
             } else {
@@ -216,9 +245,9 @@ private fun DrawScreenContentWithTwoSecsPreview() {
                     onClose = {},
                     currentPath = null,
                     paths = emptyList(),
-                    vectorPaths = emptyList(),
-                    viewportWidth = 0f,
-                    viewportHeight = 0f,
+                    sampleSvgPath = emptyList(),
+                    viewPortWidth = 0f,
+                    viewPortHeight = 0f,
                     onAction = {}
             )
         }
@@ -241,9 +270,9 @@ private fun DrawScreenContentWithZeroSecPreview() {
                     onClose = {},
                     currentPath = null,
                     paths = emptyList(),
-                    vectorPaths = emptyList(),
-                    viewportWidth = 0f,
-                    viewportHeight = 0f,
+                    sampleSvgPath = emptyList(),
+                    viewPortWidth = 0f,
+                    viewPortHeight = 0f,
                     onAction = {}
             )
         }
