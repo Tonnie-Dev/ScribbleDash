@@ -2,9 +2,11 @@ package com.tonyxlab.utils
 
 import android.content.Context
 import android.util.Xml
+import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
 import org.xmlpull.v1.XmlPullParser
 import timber.log.Timber
 import java.io.IOException
+import kotlin.collections.mapNotNull
 
 fun getRawVectorPathData(context: Context): Map<String, VectorPathData> {
     val resultMap = mutableMapOf<String, VectorPathData>()
@@ -82,3 +84,19 @@ data class VectorPathData(
     val viewportWidth: Float,
     val viewportHeight: Float
 )
+
+
+
+fun List<PathData>.toSvgPathStrings(): List<String> {
+    return this.mapNotNull { pathData ->
+        val path = pathData.path
+        if (path.isEmpty()) return@mapNotNull null
+
+        buildString {
+            append("M ${path.first().x} ${path.first().y} ")
+            for (point in path.drop(1)) {
+                append("L ${point.x} ${point.y} ")
+            }
+        }.trim()
+    }
+}
