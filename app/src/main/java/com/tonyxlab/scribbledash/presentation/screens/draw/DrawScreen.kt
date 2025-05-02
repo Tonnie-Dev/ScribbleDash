@@ -36,7 +36,7 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.scribbledash.presentation.theme.Success
 import com.tonyxlab.utils.drawCustomPaths
-import com.tonyxlab.utils.drawRandomVector
+import com.tonyxlab.utils.drawSvgVector
 import com.tonyxlab.utils.toSvgPathStrings
 import org.koin.androidx.compose.koinViewModel
 
@@ -161,7 +161,7 @@ fun DrawScreenContent(
 
                             } else {
 
-                                drawRandomVector(
+                                drawSvgVector(
                                         vectorPaths = sampleSvgPath,
                                         viewportWidth = viewPortWidth,
                                         viewportHeight = viewPortHeight
