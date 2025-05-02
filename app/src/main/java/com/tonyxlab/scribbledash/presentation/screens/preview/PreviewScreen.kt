@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
@@ -29,7 +30,10 @@ import com.tonyxlab.scribbledash.presentation.core.components.AppLabelText
 import com.tonyxlab.scribbledash.presentation.core.components.DrawingCanvas
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
-import com.tonyxlab.utils.drawRandomVector
+import com.tonyxlab.utils.centerAndScaleToFit
+import com.tonyxlab.utils.drawCustomPaths
+import com.tonyxlab.utils.drawSvgVector
+import com.tonyxlab.utils.toOffsetPaths
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -91,7 +95,7 @@ fun PreviewContentScreen(
                     text = stringResource(id = R.string.text_example)
             ) {
 
-                drawRandomVector(
+                drawSvgVector(
                         vectorPaths = sampleSvgStrings,
                         viewportWidth = viewPortWidth,
                         viewportHeight = viewPortHeight
@@ -113,13 +117,11 @@ fun PreviewContentScreen(
                     text = stringResource(id = R.string.text_drawing)
             ){
 
+                val mergedPath: List<Offset> = userPathStrings.toOffsetPaths().flatten()
+                val centeredPaths = mergedPath.centerAndScaleToFit(this.size)
 
-                drawRandomVector(
-                        vectorPaths = userPathStrings,
+                drawCustomPaths(path = centeredPaths, thickness = 1f)
 
-
-
-                )
             }
         }
 
