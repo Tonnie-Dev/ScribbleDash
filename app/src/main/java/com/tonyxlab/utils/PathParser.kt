@@ -2,6 +2,7 @@ package com.tonyxlab.utils
 
 import android.content.Context
 import android.util.Xml
+import androidx.compose.ui.geometry.Offset
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
 import org.xmlpull.v1.XmlPullParser
 import timber.log.Timber
@@ -100,3 +101,37 @@ fun List<PathData>.toSvgPathStrings(): List<String> {
         }.trim()
     }
 }
+
+
+fun List<String>.toOffsetPaths(): List<List<Offset>> {
+    return this.mapNotNull { pathString ->
+        val tokens = pathString.trim().split("\\s+".toRegex())
+        if (tokens.size < 3) return@mapNotNull null
+
+        val offsets = mutableListOf<Offset>()
+        var i = 0
+
+        while (i < tokens.size) {
+            val cmd = tokens[i]
+            if (cmd == "M" || cmd == "L") {
+                if (i + 2 < tokens.size) {
+                    val x = tokens[i + 1].toFloatOrNull()
+                    val y = tokens[i + 2].toFloatOrNull()
+                    if (x != null && y != null) {
+                        offsets.add(Offset(x, y))
+                        i += 3
+                    } else {
+                        break
+                    }
+                } else {
+                    break
+                }
+            } else {
+                i++
+            }
+        }
+
+        if (offsets.isNotEmpty()) offsets else null
+    }
+}
+
