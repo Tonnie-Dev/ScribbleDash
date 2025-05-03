@@ -2,6 +2,7 @@ package com.tonyxlab.scribbledash.presentation.screens.draw.handling
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import com.tonyxlab.scribbledash.data.ColorSerializer
 import com.tonyxlab.scribbledash.data.ListOffsetSerializer
@@ -15,7 +16,9 @@ data class DrawUiState(
     val currentSvgPath: RandomVectorData = RandomVectorData(),
     val buttonsState: ButtonsState = ButtonsState(),
     val undoStack: List<PathData> = emptyList(),
-    val remainingSecs: Int = 0
+    val remainingSecs: Int = 0,
+        val canvasSize: Size = Size.Zero,
+        val similarityScore: Int = 0
 ) {
 
     @Serializable

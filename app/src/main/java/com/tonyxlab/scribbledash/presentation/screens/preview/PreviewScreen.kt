@@ -1,14 +1,17 @@
 package com.tonyxlab.scribbledash.presentation.screens.preview
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -50,11 +53,11 @@ fun PreviewScreen(
 
         PreviewContentScreen(
                 modifier = modifier.padding(innerPadding),
-                score = "",
+                score = state.score.toString(),
                 sampleSvgStrings = state.sampleSvgStrings,
                 viewPortWidth = state.viewPortWidth,
                 viewPortHeight = state.viewPortHeight,
-               userPathStrings = state.userPathStrings,
+                userPathStrings = state.userPathStrings,
                 onClose = onClose
         )
     }
@@ -72,17 +75,25 @@ fun PreviewContentScreen(
 ) {
 
 
-    Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+            modifier = modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
         AppCloseIcon(
                 modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceDoubleDp * 42),
                 onClose = onClose
         )
 
-        AppHeaderText(text = score, textStyle = MaterialTheme.typography.displayLarge)
+        AppHeaderText(
+                text = score.plus("%"),
+                textStyle = MaterialTheme.typography.displayLarge
+        )
 
-
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+        ) {
 
             PreviewItem(
                     modifier = Modifier
@@ -90,8 +101,7 @@ fun PreviewContentScreen(
 
                                 rotationZ = -10f
 
-                            }
-                            .align(Alignment.CenterStart),
+                            },
                     text = stringResource(id = R.string.text_example)
             ) {
 
@@ -108,16 +118,16 @@ fun PreviewContentScreen(
                     modifier = Modifier
                             .graphicsLayer {
 
-                                rotationZ = 10f
+                                rotationZ = 15f
 
                             }
-                            .align(Alignment.CenterEnd),
-
+,
 
                     text = stringResource(id = R.string.text_drawing)
-            ){
+            ) {
 
-                val mergedPath: List<Offset> = userPathStrings.toOffsetPaths().flatten()
+                val mergedPath: List<Offset> = userPathStrings.toOffsetPaths()
+                        .flatten()
                 val centeredPaths = mergedPath.centerAndScaleToFit(this.size)
 
                 drawCustomPaths(path = centeredPaths, thickness = 1f)
@@ -125,15 +135,17 @@ fun PreviewContentScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.spaceLarge))
         AppHeaderText("Woohoo!", textStyle = MaterialTheme.typography.headlineLarge)
 
         AppBodyText(
                 modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceOneHundredFifty),
                 text = "kllkkkk"
         )
-
+        Spacer(modifier = Modifier.weight(1f))
         AppButton(
 
+                modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceDoubleDp * 11),
                 containerColor = MaterialTheme.colorScheme.primary,
                 buttonText = stringResource(R.string.button_text_try_again)
         ) { }

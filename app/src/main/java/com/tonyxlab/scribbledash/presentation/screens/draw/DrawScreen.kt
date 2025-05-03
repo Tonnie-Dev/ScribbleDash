@@ -16,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -43,7 +45,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun DrawScreen(
     onClose: () -> Unit,
-    onSubmit: (List<String>, List<String>, Float, Float) -> Unit,
+    onSubmit: (List<String>, List<String>, Float, Float, Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DrawViewModel = koinViewModel(),
 
@@ -61,7 +63,8 @@ fun DrawScreen(
                         it.sampleSvgPathData,
                         it.userPathData,
                         it.viewPortWidth,
-                        it.viewPortHeight
+                        it.viewPortHeight,
+                        it.similarityScore
                 )
             }
         }
@@ -135,12 +138,20 @@ fun DrawScreenContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceDoubleDp)
             ) {
-                DrawingCanvas(
+                DrawingCanvas(modifier = Modifier.onSizeChanged{
+
+
+                    size ->
+
+                    onAction(DrawUiEvent.OnCanvasSizeChanged(Size(size.width.toFloat(), size.height.toFloat())))
+                },
 
                         onAction = onAction,
 
                         canDraw = canDraw,
                         onCustomDraw = {
+
+
                             paths.fastForEach { pathData ->
                                 drawCustomPaths(path = pathData.path, color = pathData.color)
                             }

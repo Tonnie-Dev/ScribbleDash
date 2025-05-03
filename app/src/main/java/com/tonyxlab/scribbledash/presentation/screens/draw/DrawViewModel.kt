@@ -2,12 +2,15 @@ package com.tonyxlab.scribbledash.presentation.screens.draw
 
 import android.content.Context
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
+import com.tonyxlab.scribbledash.presentation.screens.preview.components.DifficultyLevel
+import com.tonyxlab.scribbledash.presentation.screens.preview.components.calculatePathSimilarity
 import com.tonyxlab.utils.toSvgPathStrings
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -16,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class DrawViewModel(
     private val context: Context,
@@ -42,7 +46,14 @@ class DrawViewModel(
             DrawUiEvent.OnUnDo -> unDoDrawing()
             DrawUiEvent.OnRedo -> reDoDrawing()
             is DrawUiEvent.OnSubmitDrawing -> submitDrawing()
+            is DrawUiEvent.OnCanvasSizeChanged -> updateSize(event.size)
         }
+    }
+
+    private fun updateSize(size: Size) {
+
+        _drawingUiState.update { it.copy(canvasSize = size) }
+
     }
 
     private fun onDraw(offset: Offset) {
@@ -119,6 +130,21 @@ class DrawViewModel(
 
     private fun submitDrawing() {
 
+        val similarityScore =
+
+            calculatePathSimilarity(
+
+                    referencePathStrings = _drawingUiState.value.currentSvgPath.paths,
+                    userPathStrings = _drawingUiState.value.paths.toSvgPathStrings(),
+                    difficulty = DifficultyLevel.BEGINNER,
+                    canvasSize = _drawingUiState.value.canvasSize
+            )
+
+
+        _drawingUiState.update {
+            it.copy(similarityScore = (0..100).random())
+        }
+
         viewModelScope.launch {
 
 
@@ -128,6 +154,7 @@ class DrawViewModel(
                             userPathData = _drawingUiState.value.paths.toSvgPathStrings(),
                             viewPortWidth = _drawingUiState.value.currentSvgPath.viewportWidth,
                             viewPortHeight = _drawingUiState.value.currentSvgPath.viewportHeight,
+                            similarityScore = _drawingUiState.value.similarityScore
                     )
             )
         }

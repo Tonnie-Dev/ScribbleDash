@@ -1,6 +1,7 @@
 package com.tonyxlab.scribbledash.presentation.screens.draw.handling
 
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 
 sealed interface DrawUiEvent {
     data object OnStartNewPath : DrawUiEvent
@@ -14,5 +15,6 @@ sealed interface DrawUiEvent {
     ) : DrawUiEvent
 
     data object OnUnDo : DrawUiEvent
+    data class OnCanvasSizeChanged(val size: Size) : DrawUiEvent
     data object OnRedo : DrawUiEvent
 }

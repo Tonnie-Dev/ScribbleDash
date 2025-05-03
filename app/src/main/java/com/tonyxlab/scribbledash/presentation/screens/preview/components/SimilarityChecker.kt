@@ -1,4 +1,4 @@
-package com.tonyxlab.scribbledash.presentation.screens.draw.components
+package com.tonyxlab.scribbledash.presentation.screens.preview.components
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -9,17 +9,19 @@ import android.graphics.RectF
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidPath
+import androidx.compose.ui.graphics.vector.PathParser
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
+import androidx.core.graphics.get
 
 fun calculatePathSimilarity(
-    referencePaths: List<Path>,
-    userPaths: List<Path>,
+    referencePathStrings: List<String>,
+    userPathStrings: List<String>,
     difficulty: DifficultyLevel,
     canvasSize: Size,
-    userStrokeWidth: Float = 10f // default from your drawCustomPaths
-): Float {
+    userStrokeWidth: Float = 10f
+): Int {
     val strokeMultiplier = when (difficulty) {
         DifficultyLevel.BEGINNER -> 15f
         DifficultyLevel.CHALLENGING -> 7f
@@ -27,6 +29,14 @@ fun calculatePathSimilarity(
     }
 
     val referenceStrokeWidth = userStrokeWidth * strokeMultiplier
+
+    val referencePaths = referencePathStrings.map {
+        PathParser().parsePathString(it).toPath()
+    }
+
+    val userPaths = userPathStrings.map {
+        PathParser().parsePathString(it).toPath()
+    }
 
     val normalizedReferenceBitmap = createNormalizedBitmap(
             paths = referencePaths,
@@ -45,7 +55,8 @@ fun calculatePathSimilarity(
             referenceStrokeWidth = referenceStrokeWidth
     )
 
-    return compareBitmaps(normalizedUserBitmap, normalizedReferenceBitmap)
+    val similarity = compareBitmaps(normalizedUserBitmap, normalizedReferenceBitmap)
+    return (similarity * 100).toInt()
 }
 
 private fun createNormalizedBitmap(
@@ -57,7 +68,7 @@ private fun createNormalizedBitmap(
     referenceStrokeWidth: Float = 0f
 ): Bitmap {
     val paint = Paint().apply {
-        color = android.graphics.Color.BLACK
+        color = Color.BLACK
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
@@ -84,7 +95,7 @@ private fun createNormalizedBitmap(
 
     val bitmap = createBitmap(canvasSize.width.toInt(), canvasSize.height.toInt())
     val canvas = Canvas(bitmap)
-    canvas.drawColor(android.graphics.Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
 
     canvas.withTranslation(-bounds.left, -bounds.top) {
         withScale(scale, scale, 0f, 0f) {
@@ -101,8 +112,8 @@ private fun compareBitmaps(userBitmap: Bitmap, referenceBitmap: Bitmap): Float {
 
     for (x in 0 until userBitmap.width) {
         for (y in 0 until userBitmap.height) {
-            val userPixel = userBitmap.getPixel(x, y)
-            val referencePixel = referenceBitmap.getPixel(x, y)
+            val userPixel = userBitmap[x, y]
+            val referencePixel = referenceBitmap[x, y]
 
             val userVisible = userPixel != Color.TRANSPARENT
             val refVisible = referencePixel != Color.TRANSPARENT

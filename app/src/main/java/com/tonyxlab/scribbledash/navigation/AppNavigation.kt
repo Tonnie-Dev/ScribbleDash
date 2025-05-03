@@ -57,7 +57,7 @@ fun NavGraphBuilder.appDestinations(
         DrawScreen(
                 modifier = modifier,
                 onClose = { navController.popBackStack() },
-                onSubmit = { sampleSvgStrings, userPathStrings, viewPortWidth, viewPortHeight ->
+                onSubmit = { sampleSvgStrings, userPathStrings, viewPortWidth, viewPortHeight, similarityScore ->
 
 
                     navController.navigate(
@@ -65,7 +65,8 @@ fun NavGraphBuilder.appDestinations(
                                     sampleSvgStrings = sampleSvgStrings,
                                     userPathStrings = userPathStrings,
                                     viewPortWidth = viewPortWidth,
-                                    viewPortHeight = viewPortHeight
+                                    viewPortHeight = viewPortHeight,
+                                    similarityScore = similarityScore
                             )
                     )
                 }
@@ -100,6 +101,7 @@ sealed class Destinations {
         val userPathStrings: List<String>,
         val viewPortWidth: Float,
         val viewPortHeight: Float,
+        val similarityScore: Int
     ) : Destinations()
 
 }
