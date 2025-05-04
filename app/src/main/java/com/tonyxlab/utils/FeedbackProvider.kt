@@ -48,8 +48,10 @@ object FeedbackProvider {
 
         val feedback = when (score) {
 
-            in 0..33 -> Pair("Oops",oopsFeedback)
-            in 34..66 -> Pair("Good",goodFeedback)
+            in 0..39 -> Pair("Oops",oopsFeedback)
+            in 40 .. 69 -> Pair("Meh",oopsFeedback)
+            in 70..79 -> Pair("Good",goodFeedback)
+            in 80..89 -> Pair("Great",goodFeedback)
             else -> Pair("Woohoo!", woohooFeedback)
 
         }
