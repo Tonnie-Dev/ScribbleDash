@@ -7,7 +7,6 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.
 import org.xmlpull.v1.XmlPullParser
 import timber.log.Timber
 import java.io.IOException
-import kotlin.collections.mapNotNull
 
 fun getRawVectorPathData(context: Context): Map<String, VectorPathData> {
     val resultMap = mutableMapOf<String, VectorPathData>()
@@ -88,20 +87,43 @@ data class VectorPathData(
 
 
 
+
+/**
+ * Extension function to convert a list of `PathData` objects to a list of SVG path strings.
+ *
+ * Each `PathData` object is expected to contain a list of `PointF` representing a path.
+ * This function generates an SVG path string for each `PathData` and returns a list of these strings.
+ * Empty paths are ignored.
+ */
 fun List<PathData>.toSvgPathStrings(): List<String> {
     return this.mapNotNull { pathData ->
-        val path = pathData.path
-        if (path.isEmpty()) return@mapNotNull null
-
-        buildString {
-            append("M ${path.first().x} ${path.first().y} ")
-            for (point in path.drop(1)) {
-                append("L ${point.x} ${point.y} ")
-            }
-        }.trim()
+        pathData.toSvgPathString()
     }
 }
 
+/**
+ * Extension function to convert a single PathData to an SVG path string.
+ * Returns null if the path is empty.
+ */
+private fun PathData.toSvgPathString(): String? {
+    if (path.isEmpty()) {
+        return null
+    }
+
+    return buildString {
+        // Use a StringBuilder for efficient string building.
+        // Start with the "Move To" command using the first point.
+        append("M ${path.first().x} ${path.first().y} ")
+
+        // Use a loop to append "Line To" commands for the remaining points.
+        path.drop(1).forEach { point ->
+            append("L ${point.x} ${point.y} ")
+        }
+    }.trim() // Remove any trailing whitespace.
+}
+
+
+/*
 
 fun List<String>.toOffsetPaths(): List<List<Offset>> {
     return this.mapNotNull { pathString ->
@@ -133,5 +155,74 @@ fun List<String>.toOffsetPaths(): List<List<Offset>> {
 
         if (offsets.isNotEmpty()) offsets else null
     }
+
+}
+
+*/
+
+/**
+ * Converts a list of strings to a list of lists of Offset objects.
+ *
+ * Each string in the list is expected to represent a sequence of path commands and coordinates,
+ * such as "M x1 y1 L x2 y2 L x3 y3 ...". This function parses each string,
+ * extracting the coordinates defined by the "M" (move to) and "L" (line to) commands,
+ * and represents them as Offset objects.
+ *
+ * @receiver The list of strings to convert.
+ * @return A list of lists of Offset objects, where each inner list represents a path
+ *   and each Offset object represents a point on that path. Returns an empty list if the input
+ *   list is empty or if no valid paths can be parsed.
+ */
+fun List<String>.toOffsetPaths(): List<List<Offset>> {
+    return mapNotNull { pathString ->
+        pathString.toOffsetPath()
+    }.filter { it.isNotEmpty() }
+}
+
+/**
+ * Converts a single path string to a list of Offset objects.
+ *
+ * This function parses a path string, extracting coordinates for "M" (move to) and "L" (line to)
+ * commands and representing them as Offset objects. Other commands are ignored.
+ *
+ * @receiver The path string to parse.
+ * @return A list of Offset objects representing the points on the path, or null if the
+ *   path string is invalid or does not contain any valid "M" or "L" commands.
+ */
+private fun String.toOffsetPath(): List<Offset>? {
+    val tokens = this.trim()
+            .split("\\s+".toRegex())
+
+    // Validate minimum token size for a valid path (e.g., "M x y").
+    if (tokens.size < 3) return null
+
+    val offsets = mutableListOf<Offset>()
+    var currentIndex = 0
+
+    while (currentIndex < tokens.size) {
+        val command = tokens[currentIndex]
+
+        when (command) {
+            "M", "L" -> {
+                // Ensure there are enough tokens for x and y coordinates.
+                if (currentIndex + 2 >= tokens.size) return null
+
+                val x = tokens[currentIndex + 1].toFloatOrNull()
+                val y = tokens[currentIndex + 2].toFloatOrNull()
+
+                // Validate coordinates.
+                if (x == null || y == null) return null
+
+                offsets.add(Offset(x, y))
+                currentIndex += 3 // Move to the next command.
+            }
+
+            else -> {
+                currentIndex++ // Ignore unknown commands.
+            }
+        }
+    }
+
+    return offsets
 }
 

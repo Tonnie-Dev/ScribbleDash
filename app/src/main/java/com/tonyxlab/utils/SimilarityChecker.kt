@@ -3,16 +3,15 @@ package com.tonyxlab.utils
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.PathMeasure
 import android.graphics.PorterDuff
 import android.graphics.RectF
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.core.graphics.createBitmap
-import androidx.core.graphics.withScale
-import androidx.core.graphics.withTranslation
 import androidx.core.graphics.get
 
 fun calculatePathSimilarity(
@@ -31,40 +30,46 @@ fun calculatePathSimilarity(
     val referenceStrokeWidth = userStrokeWidth * strokeMultiplier
 
     val referencePaths = referencePathStrings.map {
-        PathParser().parsePathString(it).toPath()
+        PathParser().parsePathString(it).toPath().asAndroidPath()
     }
 
     val userPaths = userPathStrings.map {
-        PathParser().parsePathString(it).toPath()
+        PathParser().parsePathString(it).toPath().asAndroidPath()
     }
 
-    val normalizedReferenceBitmap = createNormalizedBitmap(
+    val normalizedReferenceBitmap = createNormalizedBitmapWithMatrix(
             paths = referencePaths,
             canvasSize = canvasSize,
-            strokeWidth = referenceStrokeWidth,
-            userStrokeWidth = userStrokeWidth,
-            isUser = false
+            strokeWidth = referenceStrokeWidth
     )
 
-    val normalizedUserBitmap = createNormalizedBitmap(
+    val normalizedUserBitmap = createNormalizedBitmapWithMatrix(
             paths = userPaths,
             canvasSize = canvasSize,
             strokeWidth = userStrokeWidth,
-            userStrokeWidth = userStrokeWidth,
-            isUser = true,
             referenceStrokeWidth = referenceStrokeWidth
     )
 
-    val similarity = compareBitmaps(normalizedUserBitmap, normalizedReferenceBitmap)
-    return (similarity * 100).toInt()
+    val coverage = compareBitmaps(normalizedUserBitmap, normalizedReferenceBitmap) * 100f
+
+    val referenceLength = referencePaths.sumOf { getPathLength(it).toDouble() }
+    val userLength = userPaths.sumOf { getPathLength(it).toDouble() }
+
+   val lengthRatio = if (referenceLength > 0) userLength / referenceLength else 0.0
+    val lengthPenalty = if (lengthRatio < 0.7) {
+        100.0 - (lengthRatio * 100.0)
+    } else 0.0
+
+    val finalScore = (coverage - lengthPenalty).coerceIn(0.0, 100.0)
+    return finalScore.toInt()
 }
 
-private fun createNormalizedBitmap(
-    paths: List<Path>,
+
+
+private fun createNormalizedBitmapWithMatrix(
+    paths: List<android.graphics.Path>,
     canvasSize: Size,
     strokeWidth: Float,
-    userStrokeWidth: Float,
-    isUser: Boolean,
     referenceStrokeWidth: Float = 0f
 ): Bitmap {
     val paint = Paint().apply {
@@ -76,35 +81,46 @@ private fun createNormalizedBitmap(
         this.strokeWidth = strokeWidth
     }
 
-    // First: calculate total bounds
-    val combinedPath = android.graphics.Path().apply {
-        paths.forEach { addPath(it.asAndroidPath()) }
+    val bounds = RectF().also { rect ->
+        val combined = android.graphics.Path().apply {
+            paths.forEach { addPath(it) }
+        }
+        combined.computeBounds(rect, true)
     }
-    val bounds = RectF().also { combinedPath.computeBounds(it, true) }
 
-    // Inset bounds
+    // Inset for stroke width difference
     val halfStroke = strokeWidth / 2f
-    val insetExtra = if (isUser) (referenceStrokeWidth - userStrokeWidth) / 2f else 0f
-    bounds.inset(halfStroke + insetExtra, halfStroke + insetExtra)
+    val insetExtra = maxOf((referenceStrokeWidth - strokeWidth) / 2f, 0f)
+    bounds.inset(-halfStroke - insetExtra, -halfStroke - insetExtra)
 
-    val shapeWidth = bounds.width()
-    val shapeHeight = bounds.height()
+    val scale = minOf(
+            canvasSize.width / bounds.width(),
+            canvasSize.height / bounds.height()
+    )
 
-    // Calculate scaling (preserving aspect ratio)
-    val scale = minOf(canvasSize.width / shapeWidth, canvasSize.height / shapeHeight)
+    val dx = (canvasSize.width - bounds.width() * scale) / 2f - bounds.left * scale
+    val dy = (canvasSize.height - bounds.height() * scale) / 2f - bounds.top * scale
+
+    val transform = Matrix().apply {
+        postScale(scale, scale)
+        postTranslate(dx, dy)
+    }
 
     val bitmap = createBitmap(canvasSize.width.toInt(), canvasSize.height.toInt())
-    val canvas = Canvas(bitmap)
-    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+    val canvas = Canvas(bitmap).apply {
+        drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+    }
 
-    canvas.withTranslation(-bounds.left, -bounds.top) {
-        withScale(scale, scale, 0f, 0f) {
-            paths.forEach { canvas.drawPath(it.asAndroidPath(), paint) }
+    paths.forEach { path ->
+        val transformed = android.graphics.Path(path).apply {
+            transform(transform)
         }
+        canvas.drawPath(transformed, paint)
     }
 
     return bitmap
 }
+
 
 private fun compareBitmaps(userBitmap: Bitmap, referenceBitmap: Bitmap): Float {
     var visibleUserPixelCount = 0
@@ -129,13 +145,24 @@ private fun compareBitmaps(userBitmap: Bitmap, referenceBitmap: Bitmap): Float {
     else matchedUserPixelCount.toFloat() / visibleUserPixelCount.toFloat()
 }
 
-// Utility to convert androidx.compose.ui.graphics.Path to android.graphics.Path
-fun Path.toAndroidPath(): android.graphics.Path {
-    return this.asAndroidPath()
+private fun getPathLength(path: android.graphics.Path): Float {
+    var totalLength = 0f
+    val pathMeasure = PathMeasure(path, false)
+
+    do {
+        totalLength += pathMeasure.length
+    } while (pathMeasure.nextContour())
+
+    return totalLength
 }
+
+
+
 
 enum class DifficultyLevel {
     BEGINNER,
     CHALLENGING,
     MASTER
 }
+
+

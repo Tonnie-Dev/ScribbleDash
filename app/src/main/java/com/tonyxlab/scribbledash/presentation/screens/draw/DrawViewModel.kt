@@ -142,9 +142,9 @@ class DrawViewModel(
                     canvasSize = _drawingUiState.value.canvasSize
             )
 
-
+        val randomSimilarityScore = (0..100).random()
         _drawingUiState.update {
-            it.copy(similarityScore = (0..100).random())
+            it.copy(similarityScore = similarityScore)
         }
 
         viewModelScope.launch {
