@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.toRoute
 import com.tonyxlab.scribbledash.navigation.Destinations
 import com.tonyxlab.scribbledash.presentation.screens.preview.handling.PreviewUiState
+import com.tonyxlab.utils.FeedbackProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -24,7 +25,8 @@ class PreviewViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
                         sampleSvgStrings = data.sampleSvgStrings,
                         userPathStrings = data.userPathStrings,
                         viewPortWidth = data.viewPortWidth,
-                        viewPortHeight = data.viewPortHeight
+                        viewPortHeight = data.viewPortHeight,
+
                 )
         )
 

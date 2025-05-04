@@ -1,4 +1,4 @@
-package com.tonyxlab.scribbledash.presentation.screens.preview.components
+package com.tonyxlab.utils
 
 import android.graphics.Bitmap
 import android.graphics.Canvas

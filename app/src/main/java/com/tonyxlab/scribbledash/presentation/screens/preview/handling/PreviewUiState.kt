@@ -5,5 +5,6 @@ data class PreviewUiState(
     val sampleSvgStrings: List<String> = emptyList(),
     val userPathStrings: List<String> = emptyList(),
     val viewPortWidth: Float = 0f,
-    val viewPortHeight: Float = 0f
+    val viewPortHeight: Float = 0f,
+
 )

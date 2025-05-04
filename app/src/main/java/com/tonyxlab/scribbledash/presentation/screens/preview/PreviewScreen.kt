@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,6 +34,7 @@ import com.tonyxlab.scribbledash.presentation.core.components.AppLabelText
 import com.tonyxlab.scribbledash.presentation.core.components.DrawingCanvas
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
+import com.tonyxlab.utils.FeedbackProvider
 import com.tonyxlab.utils.centerAndScaleToFit
 import com.tonyxlab.utils.drawCustomPaths
 import com.tonyxlab.utils.drawSvgVector
@@ -47,7 +49,7 @@ fun PreviewScreen(
 ) {
 
     val state by viewModel.previewUiState.collectAsStateWithLifecycle()
-
+    val context = LocalContext.current
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
 
 
@@ -58,6 +60,7 @@ fun PreviewScreen(
                 viewPortWidth = state.viewPortWidth,
                 viewPortHeight = state.viewPortHeight,
                 userPathStrings = state.userPathStrings,
+                feedback = FeedbackProvider.getFeedback(context, state.score),
                 onClose = onClose
         )
     }
@@ -66,7 +69,10 @@ fun PreviewScreen(
 
 @Composable
 fun PreviewContentScreen(
-    score: String, onClose: () -> Unit,
+
+    score: String,
+    feedback: Pair<String, String>,
+    onClose: () -> Unit,
     sampleSvgStrings: List<String>,
     userPathStrings: List<String>,
     viewPortWidth: Float,
@@ -92,19 +98,19 @@ fun PreviewContentScreen(
 
         Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
+                horizontalArrangement = Arrangement.spacedBy(
+                        MaterialTheme.spacing.spaceMedium,
+                        alignment = Alignment.CenterHorizontally
+                )
         ) {
 
             PreviewItem(
                     modifier = Modifier
                             .graphicsLayer {
-
                                 rotationZ = -10f
-
                             },
                     text = stringResource(id = R.string.text_example)
             ) {
-
                 drawSvgVector(
                         vectorPaths = sampleSvgStrings,
                         viewportWidth = viewPortWidth,
@@ -114,14 +120,10 @@ fun PreviewContentScreen(
                 )
             }
             PreviewItem(
-
                     modifier = Modifier
                             .graphicsLayer {
-
-                                rotationZ = 15f
-
-                            }
-,
+                                rotationZ = 10f
+                            },
 
                     text = stringResource(id = R.string.text_drawing)
             ) {
@@ -136,13 +138,15 @@ fun PreviewContentScreen(
         }
 
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.spaceLarge))
-        AppHeaderText("Woohoo!", textStyle = MaterialTheme.typography.headlineLarge)
+        AppHeaderText(feedback.first, textStyle = MaterialTheme.typography.headlineLarge)
 
         AppBodyText(
                 modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceOneHundredFifty),
-                text = "kllkkkk"
+                text = feedback.second
         )
+
         Spacer(modifier = Modifier.weight(1f))
+
         AppButton(
 
                 modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceDoubleDp * 11),
@@ -192,6 +196,7 @@ private fun PreviewContentScreenPreview() {
                 userPathStrings = listOf(),
                 viewPortWidth = 0f,
                 viewPortHeight = 0f,
+                feedback = Pair("Woohoo", stringResource(R.string.feedback_woohoo_1)),
                 onClose = {}
         )
     }
