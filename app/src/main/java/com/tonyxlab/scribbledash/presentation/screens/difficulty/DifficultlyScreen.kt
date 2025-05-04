@@ -1,5 +1,6 @@
 package com.tonyxlab.scribbledash.presentation.screens.difficulty
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.scribbledash.R
+import com.tonyxlab.scribbledash.navigation.NavOperations
 import com.tonyxlab.scribbledash.presentation.core.components.AppBodyText
 import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeaderText
@@ -26,7 +28,7 @@ import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 
 @Composable
 fun DifficultyLevelScreen(
-    onClose: () -> Unit,
+    navOperations: NavOperations,
     onSelectDifficultyLevel: (DifficultyLevel) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -34,7 +36,8 @@ fun DifficultyLevelScreen(
 
         DifficultyLevelScreenContent(
                 modifier = modifier.padding(innerPadding),
-                onClose = onClose,
+                onClose = { navOperations.popBackStack() },
+                onBackPress = {navOperations.navigateToHomeDestination()},
                 onSelectDifficultyLevel = onSelectDifficultyLevel
         )
 
@@ -44,10 +47,12 @@ fun DifficultyLevelScreen(
 @Composable
 fun DifficultyLevelScreenContent(
     onClose: () -> Unit,
+    onBackPress:() -> Unit,
     onSelectDifficultyLevel: (DifficultyLevel) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
+
+    BackHandler {  onBackPress()}
     Column(
             modifier = modifier
                     .fillMaxSize(),
@@ -94,7 +99,7 @@ private fun DifficultyLevelScreenContentPreview() {
                         .background(MaterialTheme.colorScheme.background)
         ) {
 
-            DifficultyLevelScreenContent(onClose = {}, onSelectDifficultyLevel = {})
+            DifficultyLevelScreenContent(onClose = {}, onSelectDifficultyLevel = {}, onBackPress = {})
         }
     }
 }
