@@ -23,6 +23,7 @@ import kotlinx.serialization.Serializable
 
 
 fun NavGraphBuilder.appDestinations(
+    navOperations: NavOperations,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -77,7 +78,7 @@ fun NavGraphBuilder.appDestinations(
     composable<PreviewDestination> { backStack ->
 
 
-        PreviewScreen(modifier = modifier, onClose = { navController.popBackStack() })
+        PreviewScreen(modifier = modifier, navOperations =navOperations )
     }
 }
 
