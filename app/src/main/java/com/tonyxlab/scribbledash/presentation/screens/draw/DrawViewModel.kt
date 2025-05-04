@@ -1,9 +1,10 @@
 package com.tonyxlab.scribbledash.presentation.screens.draw
 
+import android.app.Application
 import android.content.Context
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
@@ -21,9 +22,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DrawViewModel(
-    private val context: Context,
+    application: Application,
     private val randomVectorProvider: (Context) -> RandomVectorData
-) : ViewModel() {
+) : AndroidViewModel(application) {
+
+    private val appContext = getApplication<Application>()
+
 
     private val _drawingUiState = MutableStateFlow(DrawUiState())
     val drawingUiState = _drawingUiState.asStateFlow()
@@ -195,7 +199,7 @@ class DrawViewModel(
     }
 
     fun pickNewRandomVector() {
-        _drawingUiState.update { it.copy(currentSvgPath = randomVectorProvider(context)) }
+        _drawingUiState.update { it.copy(currentSvgPath = randomVectorProvider(appContext)) }
     }
 
 

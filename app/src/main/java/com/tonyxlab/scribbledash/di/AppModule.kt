@@ -5,7 +5,6 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.DrawViewModel
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
 import com.tonyxlab.scribbledash.presentation.screens.preview.PreviewViewModel
 import com.tonyxlab.utils.getRawVectorPathData
-import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -24,13 +23,15 @@ val appModule = module {
         }
     }
 
-    viewModel { DrawViewModel(get(), get()) }
+    viewModelOf( ::DrawViewModel)
+
     viewModelOf(::PreviewViewModel)
     /*
         viewModel { DrawViewModel() }
         viewModel { PreviewViewModel() }
 
-
+No Compose Koin context setup, taking default. Use KoinContext(), KoinAndroidContext()
+or KoinApplication() function to setup or create Koin context and avoid such message.
 
 
     single { androidContext() }  */
@@ -56,20 +57,6 @@ val randomVectorProviderModule = module {
         }
     }
 }
-/*val randomVectorProviderModule = module {
-    single<(Context) -> RandomVectorData> {
-        { context ->
-            val allVectors = getRawVectorPathData(context)
-            if (allVectors.isEmpty()) {
-                RandomVectorData(emptyList(), 0f, 0f)
-            } else {
-                val (_, vectorData) = allVectors.entries.random()
-                val (paths, vpWidth, vpHeight) = vectorData
-                RandomVectorData(paths, vpWidth, vpHeight)
-            }
-        }
-    }
-}*/
 
 
 
