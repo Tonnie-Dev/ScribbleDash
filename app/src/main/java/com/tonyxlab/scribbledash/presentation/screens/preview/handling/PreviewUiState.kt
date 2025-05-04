@@ -1,5 +1,7 @@
 package com.tonyxlab.scribbledash.presentation.screens.preview.handling
 
+import com.tonyxlab.scribbledash.presentation.core.base.handling.UiState
+
 data class PreviewUiState(
     val score: Int = 0,
     val sampleSvgStrings: List<String> = emptyList(),
@@ -7,4 +9,4 @@ data class PreviewUiState(
     val viewPortWidth: Float = 0f,
     val viewPortHeight: Float = 0f,
 
-)
+): UiState

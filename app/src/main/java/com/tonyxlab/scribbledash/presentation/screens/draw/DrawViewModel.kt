@@ -7,6 +7,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tonyxlab.scribbledash.presentation.core.base.BaseViewModel
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
@@ -22,13 +23,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class DrawViewModel(
 
+class DrawViewModel(
     private val randomVectorProvider: () -> RandomVectorData
 ) : ViewModel() {
-
-    //private val appContext = getApplication<Application>()
-
 
     private val _drawingUiState = MutableStateFlow(DrawUiState())
     val drawingUiState = _drawingUiState.asStateFlow()

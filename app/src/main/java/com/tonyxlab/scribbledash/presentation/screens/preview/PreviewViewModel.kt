@@ -1,10 +1,9 @@
 package com.tonyxlab.scribbledash.presentation.screens.preview
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tonyxlab.scribbledash.navigation.Destinations
+import com.tonyxlab.scribbledash.presentation.core.base.BaseViewModel
 import com.tonyxlab.scribbledash.presentation.screens.preview.handling.PreviewActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.preview.handling.PreviewUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.preview.handling.PreviewUiState
@@ -12,11 +11,16 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
-class PreviewViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+typealias PreviewBaseViewModel = BaseViewModel<PreviewUiState, PreviewUiEvent, PreviewActionEvent>
 
+class PreviewViewModel(
+    savedStateHandle: SavedStateHandle,
+
+    ) : PreviewBaseViewModel() {
+
+    override val initialState: PreviewUiState
+        get() = PreviewUiState()
 
     private val _previewUiState = MutableStateFlow(PreviewUiState())
     val previewUiState = _previewUiState.asStateFlow()
@@ -35,14 +39,14 @@ class PreviewViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
                         viewPortWidth = data.viewPortWidth,
                         viewPortHeight = data.viewPortHeight,
 
-                )
+                        )
         )
 
     }
 
-    fun onEvent(event: PreviewUiEvent) {
+    override fun onEvent(event: PreviewUiEvent) {
 
-        when(event){
+        when (event) {
 
             PreviewUiEvent.OnTryAgainButtonClick -> onTryAgain()
             PreviewUiEvent.OnCloseButtonClick -> onClose()
@@ -52,25 +56,15 @@ class PreviewViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     private fun updatePreviewState(previewUiState: PreviewUiState) {
 
-
-        _previewUiState.update { previewUiState }
+        updateState { previewUiState }
     }
 
     private fun onTryAgain() {
-
-        viewModelScope.launch {
-
-            _previewActionEvent.send(PreviewActionEvent.TryAgain)
-        }
+        sendActionEvent(PreviewActionEvent.TryAgain)
     }
 
     private fun onClose() {
-
-        viewModelScope.launch {
-
-            _previewActionEvent.send(PreviewActionEvent.Exit)
-        }
+        sendActionEvent(PreviewActionEvent.Exit)
     }
-
 
 }
