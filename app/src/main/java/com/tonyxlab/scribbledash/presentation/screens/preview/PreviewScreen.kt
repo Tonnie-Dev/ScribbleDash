@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -175,7 +176,11 @@ fun PreviewItem(
     ) {
         AppLabelText(text = text, textStyle = MaterialTheme.typography.labelSmall)
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.spaceExtraSmall))
-        DrawingCanvas(modifier = Modifier.fillMaxSize()) {
+        DrawingCanvas(
+                modifier = Modifier.fillMaxSize(),
+                paddingValues = PaddingValues(horizontal = MaterialTheme.spacing.spaceExtraSmall),
+                outerRadius = MaterialTheme.spacing.spaceMedium
+        ) {
 
             onCustomDraw?.invoke(this)
         }

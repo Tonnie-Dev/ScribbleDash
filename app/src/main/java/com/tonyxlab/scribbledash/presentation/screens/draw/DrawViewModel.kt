@@ -9,8 +9,8 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEv
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
-import com.tonyxlab.scribbledash.presentation.screens.preview.components.DifficultyLevel
-import com.tonyxlab.scribbledash.presentation.screens.preview.components.calculatePathSimilarity
+import com.tonyxlab.utils.DifficultyLevel
+import com.tonyxlab.utils.calculatePathSimilarity
 import com.tonyxlab.utils.toSvgPathStrings
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class DrawViewModel(
     private val context: Context,
