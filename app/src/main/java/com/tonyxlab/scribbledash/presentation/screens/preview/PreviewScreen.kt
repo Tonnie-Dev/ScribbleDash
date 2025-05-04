@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -27,6 +28,8 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.navigation.NavOperations
+import com.tonyxlab.scribbledash.presentation.core.base.BaseContentLayout
+import com.tonyxlab.scribbledash.presentation.core.base.handling.UiState
 import com.tonyxlab.scribbledash.presentation.core.components.AppBodyText
 import com.tonyxlab.scribbledash.presentation.core.components.AppButton
 import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
@@ -36,6 +39,7 @@ import com.tonyxlab.scribbledash.presentation.core.components.DrawingCanvas
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.preview.handling.PreviewActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.preview.handling.PreviewUiEvent
+import com.tonyxlab.scribbledash.presentation.screens.preview.handling.PreviewUiState
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.utils.FeedbackProvider
 import com.tonyxlab.utils.centerAndScaleToFit
@@ -50,55 +54,74 @@ fun PreviewScreen(
     navOperations: NavOperations,
     viewModel: PreviewViewModel = koinViewModel()
 ) {
+    BaseContentLayout(
+            viewModel = viewModel,
 
-    val state by viewModel.previewUiState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+            actionEventHandler = { _, actionEvent ->
 
-    LaunchedEffect(true) {
+                when (actionEvent) {
+                    PreviewActionEvent.TryAgain -> {
+                        navOperations.navigateToDifficultyScreen()
+                    }
 
-        viewModel.previewActionEvent.collect {
-
-            when (it) {
-
-                PreviewActionEvent.TryAgain -> {
-                    navOperations.navigateToDifficultyScreen()
+                    PreviewActionEvent.Exit -> {
+                        navOperations.popBackStack()
+                    }
                 }
 
-                PreviewActionEvent.Exit -> {
-                    navOperations.popBackStack()
-                }
-            }
-        }
-    }
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
 
+            }) { previewUiState ->
 
         PreviewContentScreen(
-                modifier = modifier.padding(innerPadding),
-                score = state.score.toString(),
-                sampleSvgStrings = state.sampleSvgStrings,
-                viewPortWidth = state.viewPortWidth,
-                viewPortHeight = state.viewPortHeight,
-                userPathStrings = state.userPathStrings,
-                feedback = FeedbackProvider.getFeedback(context, state.score),
+                modifier = modifier,
+                uiState = previewUiState,
                 onEvent = viewModel::onEvent
         )
     }
+
+
+    /*
+        val state by viewModel.previewUiState.collectAsStateWithLifecycle()
+        val context = LocalContext.current
+
+
+        LaunchedEffect(true) {
+
+            viewModel.previewActionEvent.collect {
+
+                when (it) {
+
+                    PreviewActionEvent.TryAgain -> {
+                        navOperations.navigateToDifficultyScreen()
+                    }
+
+                    PreviewActionEvent.Exit -> {
+                        navOperations.popBackStack()
+                    }
+                }
+            }
+        }
+        Scaffold(containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
+
+
+            PreviewContentScreen(
+                    modifier = modifier.padding(innerPadding),
+                    uiState = ,
+
+                    onEvent = viewModel::onEvent
+            )
+        }*/
 
 }
 
 @Composable
 fun PreviewContentScreen(
-    score: String,
-    feedback: Pair<String, String>,
+    uiState: PreviewUiState,
     onEvent: (PreviewUiEvent) -> Unit,
-    sampleSvgStrings: List<String>,
-    userPathStrings: List<String>,
-    viewPortWidth: Float,
-    viewPortHeight: Float,
     modifier: Modifier = Modifier
 ) {
-
+    val context = LocalContext.current
+    val feedback = FeedbackProvider.getFeedback(context, uiState.score)
 
     Column(
             modifier = modifier.fillMaxSize(),
@@ -111,7 +134,8 @@ fun PreviewContentScreen(
         )
 
         AppHeaderText(
-                text = score.plus("%"),
+                text = uiState.score.toString()
+                        .plus("%"),
                 textStyle = MaterialTheme.typography.displayLarge
         )
 
@@ -130,33 +154,32 @@ fun PreviewContentScreen(
                             },
                     text = stringResource(id = R.string.text_example)
             ) {
+
                 drawSvgVector(
-                        vectorPaths = sampleSvgStrings,
-                        viewportWidth = viewPortWidth,
-                        viewportHeight = viewPortHeight
-
-
+                        vectorPaths = uiState.sampleSvgStrings,
+                        viewportWidth = uiState.viewPortWidth,
+                        viewportHeight = uiState.viewPortHeight
                 )
             }
+
             PreviewItem(
                     modifier = Modifier
                             .graphicsLayer {
                                 rotationZ = 10f
                             },
-
                     text = stringResource(id = R.string.text_drawing)
             ) {
 
-                val mergedPath: List<Offset> = userPathStrings.toOffsetPaths()
+                val mergedPath: List<Offset> = uiState.userPathStrings.toOffsetPaths()
                         .flatten()
                 val centeredPaths = mergedPath.centerAndScaleToFit(this.size)
 
                 drawCustomPaths(path = centeredPaths, thickness = 1f)
-
             }
         }
 
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.spaceLarge))
+
         AppHeaderText(feedback.first, textStyle = MaterialTheme.typography.headlineLarge)
 
         AppBodyText(
@@ -173,12 +196,9 @@ fun PreviewContentScreen(
                 buttonText = stringResource(R.string.button_text_try_again)
         ) { onEvent(PreviewUiEvent.OnTryAgainButtonClick) }
 
-
     }
 
-
 }
-
 
 @Composable
 fun PreviewItem(
@@ -187,19 +207,19 @@ fun PreviewItem(
     onCustomDraw: (DrawScope.() -> Unit)? = null
 ) {
 
-
     Column(
             modifier = modifier.size(MaterialTheme.spacing.spaceMedium * 10),
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AppLabelText(text = text, textStyle = MaterialTheme.typography.labelSmall)
+
         Spacer(modifier = Modifier.height(MaterialTheme.spacing.spaceExtraSmall))
+
         DrawingCanvas(
                 modifier = Modifier.fillMaxSize(),
                 paddingValues = PaddingValues(horizontal = MaterialTheme.spacing.spaceExtraSmall),
                 outerRadius = MaterialTheme.spacing.spaceMedium
         ) {
-
             onCustomDraw?.invoke(this)
         }
     }
@@ -209,19 +229,11 @@ fun PreviewItem(
 @PreviewLightDark
 @Composable
 private fun PreviewContentScreenPreview() {
-
     ScribbleDashTheme {
-
         PreviewContentScreen(
                 modifier = Modifier.background(MaterialTheme.colorScheme.background),
-                score = "13%",
-                sampleSvgStrings = listOf(),
-                userPathStrings = listOf(),
-                viewPortWidth = 0f,
-                viewPortHeight = 0f,
-                feedback = Pair("Woohoo", stringResource(R.string.feedback_woohoo_1)),
+                uiState = PreviewUiState(),
                 onEvent = {}
-
 
         )
     }

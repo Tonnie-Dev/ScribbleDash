@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.navigation.compose.rememberNavController
 import com.tonyxlab.scribbledash.navigation.AppNavHost
 import com.tonyxlab.scribbledash.navigation.rememberNavOperations
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
@@ -30,20 +29,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ScribbleDashTheme {
-                val navController = rememberNavController()
+
                 val padding = MaterialTheme.spacing.spaceDefault
-
-
 
                 AppNavHost(
                         navOperations = rememberNavOperations(),
                         modifier = Modifier.padding(padding)
                 )
-
-                /* appDestinations(
-                         modifier = Modifier.padding(padding),
-                         navController = navController
-                 )*/
 
             }
         }

@@ -80,8 +80,8 @@ fun <S : UiState, E : UiEvent, A : ActionEvent> BaseContentLayout(
                 snackbarHost = snackbarHost,
                 floatingActionButton = floatingActionButton,
                 floatingActionButtonPosition = floatingActionButtonPosition,
-                contentColor = containerColor,
-                containerColor = contentColor,
+                containerColor = containerColor,
+                contentColor = contentColor,
                 contentWindowInsets = contentWindowInsets
         ) { paddingValues ->
 
