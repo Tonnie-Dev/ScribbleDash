@@ -1,3 +1,3 @@
 package com.tonyxlab.scribbledash.presentation.core.base.handling
 
-interface UiState 
+interface UiState
