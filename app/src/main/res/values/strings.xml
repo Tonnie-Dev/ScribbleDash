@@ -3,9 +3,18 @@
     <!-- Custom App Strings-->
     <string name="headline_ready_set">Ready, set…</string>
     <string name="app_name">ScribbleDash</string>
+
+    <!--Button Texts-->
     <string name="button_text_start">START!</string>
     <string name="button_text_start_drawing">Start Drawing!</string>
     <string name="button_text_done">DONE!</string>
+
+
+    <!--Game Mode Texts-->
+    <string name="game_mode_one_round_wonder">One Round Wonder</string>
+    <string name="game_mode_speed_draw">Speed Draw</string>
+    <string name="game_mode_endless">Endless Mode</string>
+
     <string name="text_cancel">Cancel</string>
     <string name="text_close">Close</string>
     <string name="text_empty">Empty Screen</string>
