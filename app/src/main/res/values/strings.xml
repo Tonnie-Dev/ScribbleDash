@@ -15,6 +15,14 @@
     <string name="game_mode_speed_draw">Speed Draw</string>
     <string name="game_mode_endless">Endless Mode</string>
 
+    <!--Stat Item Text-->
+
+    <string name="stat_text_highest_speed_draw">Highest Speed Draw accuracy %</string>
+    <string name="stat_text_highest_meh">Most Meh+ drawings in Speed Draw</string>
+    <string name="stat_text_highest_accuracy">Highest Endless Mode accuracy %</string>
+    <string name="stat_text_highest_completed">Most drawings completed in Endless Mode</string>
+
+    <!--Extra Texts-->
     <string name="text_cancel">Cancel</string>
     <string name="text_close">Close</string>
     <string name="text_empty">Empty Screen</string>
