@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -36,34 +38,27 @@ fun StatItem(
     quota: String,
     modifier: Modifier = Modifier
 ) {
-    Surface {
+    Surface(modifier = modifier.clip(RoundedCornerShape(MaterialTheme.spacing.spaceTwelve * 2))) {
         Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier
+
+                        .fillMaxWidth()
+                        .padding(
+                                top = MaterialTheme.spacing.spaceTwelve,
+                                bottom = MaterialTheme.spacing.spaceTwelve,
+                                start = MaterialTheme.spacing.spaceTwelve,
+                                end = MaterialTheme.spacing.spaceTen * 2
+                        ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(
                         MaterialTheme.spacing.spaceTwelve
                 )
         ) {
-
-
             Image(
-                    modifier = Modifier.size(MaterialTheme.spacing.spaceLarge),
+                    modifier = Modifier.size(MaterialTheme.spacing.spaceDoubleDp * 26),
                     painter = painterResource(icon),
                     contentDescription = ""
             )
-            /*
-                        Box(
-                                Modifier
-                                        .clip(RoundedCornerShape(MaterialTheme.spacing.spaceTwelve))
-                                        .background(
-                                                color = iconBackgroundColor,
-                                                shape = RoundedCornerShape(MaterialTheme.spacing.spaceTwelve)
-                                        )
-                                        .size(MaterialTheme.spacing.spaceDoubleDp * 26),
-                                contentAlignment = Alignment.Center
-                        ) {
-                        }
-            */
 
             AppBodyText(
                     modifier = Modifier.fillMaxWidth(.5f),
@@ -73,13 +68,12 @@ fun StatItem(
             )
 
             Spacer(modifier = Modifier.weight(1f))
+
             AppHeaderText(
                     text = quota,
                     textStyle = MaterialTheme.typography.headlineLarge
             )
-
         }
-
     }
 }
 
@@ -89,41 +83,39 @@ fun StatItem(
 private fun StateItemPreview() {
     ScribbleDashTheme {
 
+        Column(
+                modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize()
+                        .padding(MaterialTheme.spacing.spaceMedium),
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceMedium)
+        ) {
+
+            StatItem(
+                    icon = R.drawable.stat_item_hour_glass,
+                    itemText = R.string.stat_text_highest_speed_draw,
+                    quota = "89%"
+            )
+
+            StatItem(
+                    icon = R.drawable.stat_item_bolt,
+                    itemText = R.string.stat_text_highest_meh,
+                    quota = "9"
+            )
 
 
-    Column(
-            modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxSize()
-                    .padding(MaterialTheme.spacing.spaceMedium),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceMedium)
-    ) {
-
-        StatItem(
-                icon = R.drawable.stat_item_hour_glass,
-                itemText = R.string.stat_text_highest_speed_draw,
-                quota = "89%"
-        )
-
-        StatItem(
-                icon = R.drawable.stat_item_bolt,
-                itemText = R.string.stat_text_highest_meh,
-                quota = "9"
-        )
+            StatItem(
+                    icon = R.drawable.stat_item_star,
+                    itemText = R.string.stat_text_highest_accuracy,
+                    quota = "100%"
+            )
 
 
-        StatItem(
-                icon = R.drawable.stat_item_star,
-                itemText = R.string.stat_text_highest_accuracy,
-                quota = "100%"
-        )
-
-
-        StatItem(
-                icon = R.drawable.stat_item_palette,
-                itemText = R.string.stat_text_highest_completed,
-                quota = "13"
-        )
-    }
+            StatItem(
+                    icon = R.drawable.stat_item_palette,
+                    itemText = R.string.stat_text_highest_completed,
+                    quota = "13"
+            )
+        }
     }
 }
