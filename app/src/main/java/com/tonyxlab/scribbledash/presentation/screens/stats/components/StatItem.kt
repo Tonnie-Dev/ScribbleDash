@@ -2,12 +2,15 @@ package com.tonyxlab.scribbledash.presentation.screens.stats.components
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -18,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.presentation.core.components.AppBodyText
@@ -42,7 +46,7 @@ fun StatItem(
         ) {
 
 
-            Icon(
+            Image(
                     modifier = Modifier.size(MaterialTheme.spacing.spaceLarge),
                     painter = painterResource(icon),
                     contentDescription = ""
@@ -62,11 +66,13 @@ fun StatItem(
             */
 
             AppBodyText(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(.5f),
                     text = stringResource(id = itemText),
-                    textStyle = MaterialTheme.typography.bodySmall
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Start
             )
 
+            Spacer(modifier = Modifier.weight(1f))
             AppHeaderText(
                     text = quota,
                     textStyle = MaterialTheme.typography.headlineLarge
@@ -84,7 +90,7 @@ private fun StateItemPreview() {
     ScribbleDashTheme {
 
 
-    }
+
     Column(
             modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
@@ -118,5 +124,6 @@ private fun StateItemPreview() {
                 itemText = R.string.stat_text_highest_completed,
                 quota = "13"
         )
+    }
     }
 }
