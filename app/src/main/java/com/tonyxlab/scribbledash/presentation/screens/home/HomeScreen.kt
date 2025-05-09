@@ -27,7 +27,6 @@ import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 @Composable
 fun HomeScreen(
     navController: NavController,
-    gameMode: GameMode,
     onSelectGameMode: (GameMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -41,7 +40,6 @@ fun HomeScreen(
 
         HomeScreenContent(
                 modifier = modifier.padding(innerPadding),
-                gameMode = gameMode,
                 onSelectGameMode = onSelectGameMode
         )
 
@@ -52,7 +50,6 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
-    gameMode: GameMode,
     onSelectGameMode: (GameMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -63,6 +60,7 @@ fun HomeScreenContent(
                         drawRect(brush = GradientScheme.backgroundGradient)
                     }
                     .fillMaxSize()
+                    .padding(MaterialTheme.spacing.spaceMedium)
 
     ) {
 
@@ -94,14 +92,24 @@ fun HomeScreenContent(
             AppBodyText(text = stringResource(id = R.string.text_select_game_mode))
         }
 
-        GameModeItem(
-                modifier = Modifier.padding(MaterialTheme.spacing.spaceMedium),
-                gameMode = gameMode,
-                onSelectGameMode = onSelectGameMode
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)) {
+
+            GameModeItem(
+                    gameMode = GameMode.OneRoundWonder,
+                    onSelectGameMode = onSelectGameMode
+            )
+            GameModeItem(
+                    gameMode = GameMode.SpeedDraw,
+                    onSelectGameMode = onSelectGameMode
+            )
+
+            GameModeItem(
+                    gameMode = GameMode.EndlessMode,
+                    onSelectGameMode = onSelectGameMode
+            )
+        }
 
     }
-
 }
 
 
@@ -112,7 +120,7 @@ private fun HomeScreenContentPreview() {
     ScribbleDashTheme {
 
         HomeScreenContent(
-                gameMode = GameMode.OneRoundWonder,
+
                 onSelectGameMode = {}
         )
     }

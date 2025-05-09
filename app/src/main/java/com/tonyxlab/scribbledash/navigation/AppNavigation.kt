@@ -6,7 +6,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.navigation.Destinations.ChartDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.DifficultyLevelDestination
@@ -17,7 +16,6 @@ import com.tonyxlab.scribbledash.presentation.core.components.EmptyScreen
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.DifficultyLevelScreen
 import com.tonyxlab.scribbledash.presentation.screens.draw.DrawScreen
 import com.tonyxlab.scribbledash.presentation.screens.home.HomeScreen
-import com.tonyxlab.scribbledash.presentation.screens.home.components.GameMode
 import com.tonyxlab.scribbledash.presentation.screens.preview.PreviewScreen
 import kotlinx.serialization.Serializable
 
@@ -36,7 +34,7 @@ fun NavGraphBuilder.appDestinations(
         HomeScreen(
                 modifier = modifier,
                 navController = navController,
-                gameMode = GameMode.OneRoundWonder,
+
                 onSelectGameMode = {
                     navController.navigate(
                             DifficultyLevelDestination
