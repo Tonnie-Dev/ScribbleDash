@@ -5,6 +5,9 @@
     <string name="app_name">ScribbleDash</string>
 
     <!--Button Texts-->
+    <string name="header_text_stats">Statistics</string>
+
+    <!--Button Texts-->
     <string name="button_text_start">START!</string>
     <string name="button_text_start_drawing">Start Drawing!</string>
     <string name="button_text_done">DONE!</string>

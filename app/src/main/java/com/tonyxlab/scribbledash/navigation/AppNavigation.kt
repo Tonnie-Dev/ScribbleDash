@@ -17,6 +17,7 @@ import com.tonyxlab.scribbledash.presentation.screens.difficulty.DifficultyLevel
 import com.tonyxlab.scribbledash.presentation.screens.draw.DrawScreen
 import com.tonyxlab.scribbledash.presentation.screens.home.HomeScreen
 import com.tonyxlab.scribbledash.presentation.screens.preview.PreviewScreen
+import com.tonyxlab.scribbledash.presentation.screens.stats.StatsScreen
 import kotlinx.serialization.Serializable
 
 
@@ -27,7 +28,7 @@ fun NavGraphBuilder.appDestinations(
 ) {
     composable<ChartDestination> {
 
-        EmptyScreen(screenText = stringResource(R.string.text_challenge_screen))
+        StatsScreen(modifier = modifier, navOperations = navOperations)
     }
     composable<HomeScreenDestination> {
 
@@ -93,6 +94,8 @@ sealed class Destinations {
 
     @Serializable
     data object ChartDestination : Destinations()
+
+
 
     @Serializable
     data class PreviewDestination(

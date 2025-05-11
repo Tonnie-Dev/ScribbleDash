@@ -80,7 +80,7 @@ fun StatItem(
 
 @PreviewLightDark
 @Composable
-private fun StateItemPreview() {
+private fun StatItemPreview() {
     ScribbleDashTheme {
 
         Column(
