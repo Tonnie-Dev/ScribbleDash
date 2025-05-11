@@ -4,6 +4,7 @@ import android.content.Context
 import com.tonyxlab.scribbledash.presentation.screens.draw.DrawViewModel
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
 import com.tonyxlab.scribbledash.presentation.screens.preview.PreviewViewModel
+import com.tonyxlab.scribbledash.presentation.screens.stats.StatsViewModel
 import com.tonyxlab.utils.getRawVectorPathData
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -26,6 +27,7 @@ val appModule = module {
     viewModelOf( ::DrawViewModel)
 
     viewModelOf(::PreviewViewModel)
+    viewModelOf(::StatsViewModel)
     /*
         viewModel { DrawViewModel() }
         viewModel { PreviewViewModel() }
