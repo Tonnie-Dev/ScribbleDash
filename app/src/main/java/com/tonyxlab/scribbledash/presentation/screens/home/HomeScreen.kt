@@ -15,19 +15,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.navigation.NavController
 import com.tonyxlab.scribbledash.R
+import com.tonyxlab.scribbledash.domain.model.GameMode
+import com.tonyxlab.scribbledash.navigation.NavOperations
 import com.tonyxlab.scribbledash.presentation.core.components.AppBodyText
 import com.tonyxlab.scribbledash.presentation.core.components.AppBottomBar
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeaderText
 import com.tonyxlab.scribbledash.presentation.core.utils.GradientScheme
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
-import com.tonyxlab.scribbledash.presentation.screens.home.components.GameMode
 import com.tonyxlab.scribbledash.presentation.screens.home.components.GameModeItem
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    onSelectGameMode: (GameMode) -> Unit,
+    navOperations: NavOperations,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -40,7 +41,7 @@ fun HomeScreen(
 
         HomeScreenContent(
                 modifier = modifier.padding(innerPadding),
-                onSelectGameMode = onSelectGameMode
+                onSelectGameMode = {navOperations.navigateToDifficultyScreen()}
         )
 
     }

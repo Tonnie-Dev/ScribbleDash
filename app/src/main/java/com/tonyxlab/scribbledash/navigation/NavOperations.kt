@@ -12,16 +12,14 @@ class NavOperations(val navController: NavHostController) {
         navController.navigate(destination)
     }
 
-   fun  navigateToHomeDestination(){
+    fun navigateToHomeDestination() {
 
-       navController.navigate(Destinations.HomeScreenDestination)
-   }
+        navController.navigate(Destinations.HomeScreenDestination)
+    }
+
     fun navigateToDifficultyScreen() {
 
-
-
         navController.navigate(Destinations.DifficultyLevelDestination)
-
 
     }
 

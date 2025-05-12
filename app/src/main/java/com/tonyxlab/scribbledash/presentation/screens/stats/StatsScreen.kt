@@ -10,11 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.navigation.NavController
 import com.tonyxlab.scribbledash.presentation.core.components.AppTopBar
 import com.tonyxlab.scribbledash.presentation.screens.stats.handling.StatsUiState
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.navigation.NavOperations
 import com.tonyxlab.scribbledash.presentation.core.base.BaseContentLayout
+import com.tonyxlab.scribbledash.presentation.core.components.AppBottomBar
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.stats.components.StatItem
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
@@ -25,10 +27,11 @@ import org.koin.androidx.compose.koinViewModel
 fun StatsScreen(
     modifier: Modifier = Modifier,
     navOperations: NavOperations,
+    navController: NavController,
     viewModel: StatsViewModel = koinViewModel()
 ) {
 
-    BaseContentLayout(viewModel = viewModel){statsUiState ->
+    BaseContentLayout(viewModel = viewModel, bottomBar = { AppBottomBar(navController = navController) }){ statsUiState ->
         StatsScreenContent(modifier = modifier,statsUiState = statsUiState)
 
     }

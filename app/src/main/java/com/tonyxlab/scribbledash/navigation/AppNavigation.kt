@@ -2,17 +2,15 @@ package com.tonyxlab.scribbledash.navigation
 
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.tonyxlab.scribbledash.R
-import com.tonyxlab.scribbledash.navigation.Destinations.ChartDestination
+import com.tonyxlab.scribbledash.navigation.Destinations.StatsDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.DifficultyLevelDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.DrawScreenDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.HomeScreenDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.PreviewDestination
-import com.tonyxlab.scribbledash.presentation.core.components.EmptyScreen
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.DifficultyLevelScreen
 import com.tonyxlab.scribbledash.presentation.screens.draw.DrawScreen
 import com.tonyxlab.scribbledash.presentation.screens.home.HomeScreen
@@ -26,21 +24,20 @@ fun NavGraphBuilder.appDestinations(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    composable<ChartDestination> {
+    composable<StatsDestination> {
 
-        StatsScreen(modifier = modifier, navOperations = navOperations)
+        StatsScreen(
+                modifier = modifier,
+                navOperations = navOperations,
+                navController = navController
+        )
     }
     composable<HomeScreenDestination> {
 
         HomeScreen(
                 modifier = modifier,
                 navController = navController,
-
-                onSelectGameMode = {
-                    navController.navigate(
-                            DifficultyLevelDestination
-                    )
-                }
+                navOperations = navOperations
         )
     }
 
@@ -49,7 +46,8 @@ fun NavGraphBuilder.appDestinations(
         DifficultyLevelScreen(
                 modifier = modifier,
                 navOperations = navOperations,
-                onSelectDifficultyLevel = { navController.navigate(DrawScreenDestination) })
+                onSelectDifficultyLevel = { navController.navigate(DrawScreenDestination) }
+        )
     }
 
     composable<DrawScreenDestination> {
@@ -77,7 +75,7 @@ fun NavGraphBuilder.appDestinations(
     composable<PreviewDestination> { backStack ->
 
 
-        PreviewScreen(modifier = modifier, navOperations =navOperations )
+        PreviewScreen(modifier = modifier, navOperations = navOperations)
     }
 }
 
@@ -93,8 +91,7 @@ sealed class Destinations {
     data object DrawScreenDestination : Destinations()
 
     @Serializable
-    data object ChartDestination : Destinations()
-
+    data object StatsDestination : Destinations()
 
 
     @Serializable
@@ -118,7 +115,7 @@ enum class BottomNavigationOptions(
     CHART(
             label = "Chart",
             icon = R.drawable.ic_chart,
-            route = ChartDestination
+            route = StatsDestination
     ),
 
     HOME(
