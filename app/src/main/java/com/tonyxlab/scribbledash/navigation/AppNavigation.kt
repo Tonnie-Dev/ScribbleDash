@@ -1,13 +1,14 @@
 package com.tonyxlab.scribbledash.navigation
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.tonyxlab.scribbledash.R
-import com.tonyxlab.scribbledash.navigation.Destinations.StatsDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.DifficultyLevelDestination
+import com.tonyxlab.scribbledash.navigation.Destinations.StatsDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.DrawScreenDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.HomeScreenDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.PreviewDestination
@@ -41,7 +42,7 @@ fun NavGraphBuilder.appDestinations(
         )
     }
 
-    composable<DifficultyLevelDestination> {
+    composable< DifficultyLevelDestination> {
 
         DifficultyLevelScreen(
                 modifier = modifier,
@@ -74,7 +75,6 @@ fun NavGraphBuilder.appDestinations(
 
     composable<PreviewDestination> { backStack ->
 
-
         PreviewScreen(modifier = modifier, navOperations = navOperations)
     }
 }
@@ -82,17 +82,16 @@ fun NavGraphBuilder.appDestinations(
 sealed class Destinations {
 
     @Serializable
+    data object StatsDestination : Destinations()
+
+    @Serializable
     data object HomeScreenDestination : Destinations()
 
     @Serializable
-    data object DifficultyLevelDestination : Destinations()
+    data class DifficultyLevelDestination(val gameMode: Int = -1) : Destinations()
 
     @Serializable
-    data object DrawScreenDestination : Destinations()
-
-    @Serializable
-    data object StatsDestination : Destinations()
-
+    data  class DrawScreenDestination(val gameMode:Int) : Destinations()
 
     @Serializable
     data class PreviewDestination(

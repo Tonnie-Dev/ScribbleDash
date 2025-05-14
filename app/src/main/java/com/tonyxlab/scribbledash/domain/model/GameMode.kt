@@ -33,12 +33,20 @@ sealed class GameMode(
             outlineColor = TertiaryContainer
     )
 
-    fun getGameModeByTitle(title: Int): GameMode {
+    fun getGameModeByTitle(@StringRes title: Int): GameMode {
 
         return when (title) {
             R.string.game_mode_speed_draw -> SpeedDraw
             R.string.game_mode_endless -> EndlessMode
             else -> OneRoundWonder
+        }
+    }
+
+    fun getTitleByGameMode(gameMode: GameMode): Int {
+        return when (gameMode) {
+            SpeedDraw -> R.string.game_mode_speed_draw
+            EndlessMode -> R.string.game_mode_endless
+            else -> R.string.game_mode_one_round_wonder
         }
     }
 }
