@@ -19,29 +19,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.scribbledash.R
+import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
 import com.tonyxlab.scribbledash.presentation.core.components.AppLabelText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 
 @Composable
 fun DifficultyItems(
-    onSelectDifficultyLevel: (DifficultyLevel) -> Unit,
+    onSelectDifficultyLevel: (DifficultyLevelHolder) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val difficultyLevels = listOf(
-            DifficultyLevel(
+    val difficultyLevelHolders = listOf(
+            DifficultyLevelHolder(
                     title = stringResource(R.string.text_beginner),
                     icon = R.drawable.level_beginner,
-                    level = Level.BEGINNER
+                    difficultyLevel = DifficultyLevel.BEGINNER
             ),
-            DifficultyLevel(
+            DifficultyLevelHolder(
                     title = stringResource(R.string.text_challenging),
                     icon = R.drawable.level_challenging,
-                    level = Level.CHALLENGING
+                    difficultyLevel = DifficultyLevel.CHALLENGING
             ),
-            DifficultyLevel(
+            DifficultyLevelHolder(
                     title = stringResource(R.string.text_master),
                     icon = R.drawable.level_master,
-                    level = Level.MASTER
+                    difficultyLevel = DifficultyLevel.MASTER
             )
     )
 
@@ -50,31 +51,32 @@ fun DifficultyItems(
             horizontalArrangement = Arrangement.Center
     ) {
 
-        difficultyLevels.forEachIndexed { i, item ->
-            val topPadding = when (item.level) {
-                Level.CHALLENGING -> MaterialTheme.spacing.spaceDefault
+        difficultyLevelHolders.forEachIndexed { i, item ->
+
+            val topPadding = when (item.difficultyLevel) {
+                DifficultyLevel.CHALLENGING -> MaterialTheme.spacing.spaceDefault
                 else -> MaterialTheme.spacing.spaceLarge
             }
-            val endPadding = when (item.level) {
-                Level.MASTER -> MaterialTheme.spacing.spaceDefault
+
+            val endPadding = when (item.difficultyLevel) {
+                DifficultyLevel.MASTER -> MaterialTheme.spacing.spaceDefault
                 else -> MaterialTheme.spacing.spaceLarge
             }
+
             DifficultyLevelItem(
                     modifier = Modifier.padding(top = topPadding, end = endPadding),
                     difficultyLevel = item,
                     onSelectDifficultyLevel = { onSelectDifficultyLevel(item) }
             )
         }
-
     }
-
 }
 
 
 @Composable
 fun DifficultyLevelItem(
-    difficultyLevel: DifficultyLevel,
-    onSelectDifficultyLevel: (DifficultyLevel) -> Unit,
+    difficultyLevel: DifficultyLevelHolder,
+    onSelectDifficultyLevel: (DifficultyLevelHolder) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -105,6 +107,10 @@ private fun DifficultyItemPreview() {
     }
 }
 
-data class DifficultyLevel(@DrawableRes val icon: Int, val title: String, val level: Level)
+data class DifficultyLevelHolder(
+    @DrawableRes val icon: Int,
+    val title: String,
+    val difficultyLevel: DifficultyLevel
+)
 
-enum class Level { BEGINNER, CHALLENGING, MASTER }
+
