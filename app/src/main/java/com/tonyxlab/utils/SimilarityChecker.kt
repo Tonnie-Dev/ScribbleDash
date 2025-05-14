@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.get
+import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
 
 fun calculatePathSimilarity(
     referencePathStrings: List<String>,
@@ -30,11 +31,15 @@ fun calculatePathSimilarity(
     val referenceStrokeWidth = userStrokeWidth * strokeMultiplier
 
     val referencePaths = referencePathStrings.map {
-        PathParser().parsePathString(it).toPath().asAndroidPath()
+        PathParser().parsePathString(it)
+                .toPath()
+                .asAndroidPath()
     }
 
     val userPaths = userPathStrings.map {
-        PathParser().parsePathString(it).toPath().asAndroidPath()
+        PathParser().parsePathString(it)
+                .toPath()
+                .asAndroidPath()
     }
 
     val normalizedReferenceBitmap = createNormalizedBitmapWithMatrix(
@@ -55,7 +60,7 @@ fun calculatePathSimilarity(
     val referenceLength = referencePaths.sumOf { getPathLength(it).toDouble() }
     val userLength = userPaths.sumOf { getPathLength(it).toDouble() }
 
-   val lengthRatio = if (referenceLength > 0) userLength / referenceLength else 0.0
+    val lengthRatio = if (referenceLength > 0) userLength / referenceLength else 0.0
     val lengthPenalty = if (lengthRatio < 0.7) {
         100.0 - (lengthRatio * 100.0)
     } else 0.0
@@ -63,7 +68,6 @@ fun calculatePathSimilarity(
     val finalScore = (coverage - lengthPenalty).coerceIn(0.0, 100.0)
     return finalScore.toInt()
 }
-
 
 
 private fun createNormalizedBitmapWithMatrix(
@@ -82,9 +86,10 @@ private fun createNormalizedBitmapWithMatrix(
     }
 
     val bounds = RectF().also { rect ->
-        val combined = android.graphics.Path().apply {
-            paths.forEach { addPath(it) }
-        }
+        val combined = android.graphics.Path()
+                .apply {
+                    paths.forEach { addPath(it) }
+                }
         combined.computeBounds(rect, true)
     }
 
@@ -112,9 +117,10 @@ private fun createNormalizedBitmapWithMatrix(
     }
 
     paths.forEach { path ->
-        val transformed = android.graphics.Path(path).apply {
-            transform(transform)
-        }
+        val transformed = android.graphics.Path(path)
+                .apply {
+                    transform(transform)
+                }
         canvas.drawPath(transformed, paint)
     }
 
@@ -158,11 +164,5 @@ private fun getPathLength(path: android.graphics.Path): Float {
 
 
 
-
-enum class DifficultyLevel {
-    BEGINNER,
-    CHALLENGING,
-    MASTER
-}
 
 

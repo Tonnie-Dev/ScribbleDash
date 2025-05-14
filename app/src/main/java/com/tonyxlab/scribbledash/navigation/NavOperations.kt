@@ -19,7 +19,7 @@ class NavOperations(val navController: NavHostController) {
 
     fun navigateToDifficultyScreen(gameMode: Int = -1) {
 
-        navController.navigate(Destinations.DifficultyLevelDestination(gameMode = gameMode))
+        navController.navigate(Destinations.DifficultyDestination(gameMode = gameMode))
 
     }
 

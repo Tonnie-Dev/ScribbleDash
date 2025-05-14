@@ -22,15 +22,10 @@ class PreviewViewModel(
     override val initialState: PreviewUiState
         get() = PreviewUiState()
 
-    private val _previewUiState = MutableStateFlow(PreviewUiState())
-    val previewUiState = _previewUiState.asStateFlow()
-
-    private val _previewActionEvent = Channel<PreviewActionEvent>()
-    val previewActionEvent = _previewActionEvent.receiveAsFlow()
-
     init {
 
         val data = savedStateHandle.toRoute<Destinations.PreviewDestination>()
+
         updatePreviewState(
                 PreviewUiState(
                         score = data.similarityScore,
@@ -47,15 +42,12 @@ class PreviewViewModel(
     override fun onEvent(event: PreviewUiEvent) {
 
         when (event) {
-
             PreviewUiEvent.OnTryAgainButtonClick -> onTryAgain()
             PreviewUiEvent.OnCloseButtonClick -> onClose()
         }
     }
 
-
     private fun updatePreviewState(previewUiState: PreviewUiState) {
-
         updateState { previewUiState }
     }
 
