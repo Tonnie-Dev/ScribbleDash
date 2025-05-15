@@ -8,36 +8,56 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.scribbledash.R
+import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
 import com.tonyxlab.scribbledash.navigation.NavOperations
+import com.tonyxlab.scribbledash.presentation.core.base.BaseContentLayout
 import com.tonyxlab.scribbledash.presentation.core.components.AppBodyText
 import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeaderText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.DifficultyItems
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.DifficultyLevelHolder
+import com.tonyxlab.scribbledash.presentation.screens.difficulty.handling.DifficultyActionEvent
+import com.tonyxlab.scribbledash.presentation.screens.difficulty.handling.DifficultyUiEvent
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
 fun DifficultyLevelScreen(
     navOperations: NavOperations,
-    onSelectDifficultyLevel: (DifficultyLevelHolder) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: DifficultyViewModel = koinViewModel()
 ) {
-    Scaffold(containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
+
+    BaseContentLayout(
+            viewModel = viewModel,
+            actionEventHandler = { _, action ->
+
+                when (action) {
+                    DifficultyActionEvent.Exit -> {
+                        navOperations.popBackStack()
+                    }
+
+                    is DifficultyActionEvent.NavigateToDrawScreen -> {
+                        navOperations.navigateToDifficultyScreen()
+                    }
+                }
+
+            }
+    ) {
 
         DifficultyLevelScreenContent(
-                modifier = modifier.padding(innerPadding),
+                modifier = modifier,
                 onClose = { navOperations.popBackStack() },
-                onBackPress = {navOperations.navigateToHomeDestination()},
-                onSelectDifficultyLevel = onSelectDifficultyLevel
+                onBackPress = { navOperations.navigateToHomeDestination() },
+                onEvent = viewModel::onEvent
         )
 
     }
@@ -46,12 +66,12 @@ fun DifficultyLevelScreen(
 @Composable
 fun DifficultyLevelScreenContent(
     onClose: () -> Unit,
-    onBackPress:() -> Unit,
-    onSelectDifficultyLevel: (DifficultyLevelHolder) -> Unit,
+    onBackPress: () -> Unit,
+    onEvent: (DifficultyUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    BackHandler {  onBackPress()}
+    BackHandler { onBackPress() }
     Column(
             modifier = modifier
                     .fillMaxSize(),
@@ -80,7 +100,13 @@ fun DifficultyLevelScreenContent(
         }
 
 
-        DifficultyItems(onSelectDifficultyLevel = onSelectDifficultyLevel)
+        DifficultyItems(onSelectDifficultyLevel = {
+            onEvent(
+                    DifficultyUiEvent.OnSelectMasterLevel(
+                            DifficultyLevel.CHALLENGING
+                    )
+            )
+        })
     }
 
 
@@ -98,7 +124,7 @@ private fun DifficultyLevelScreenContentPreview() {
                         .background(MaterialTheme.colorScheme.background)
         ) {
 
-            DifficultyLevelScreenContent(onClose = {}, onSelectDifficultyLevel = {}, onBackPress = {})
+            DifficultyLevelScreenContent(onClose = {}, onEvent = {}, onBackPress = {})
         }
     }
 }

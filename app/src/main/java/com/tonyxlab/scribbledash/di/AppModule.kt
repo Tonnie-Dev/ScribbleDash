@@ -1,6 +1,7 @@
 package com.tonyxlab.scribbledash.di
 
 import android.content.Context
+import com.tonyxlab.scribbledash.presentation.screens.difficulty.DifficultyViewModel
 import com.tonyxlab.scribbledash.presentation.screens.draw.DrawViewModel
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
 import com.tonyxlab.scribbledash.presentation.screens.preview.PreviewViewModel
@@ -28,6 +29,7 @@ val appModule = module {
 
     viewModelOf(::PreviewViewModel)
     viewModelOf(::StatsViewModel)
+    viewModelOf(::DifficultyViewModel)
     /*
         viewModel { DrawViewModel() }
         viewModel { PreviewViewModel() }

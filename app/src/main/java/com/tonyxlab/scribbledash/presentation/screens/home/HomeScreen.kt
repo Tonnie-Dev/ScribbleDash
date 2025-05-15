@@ -43,7 +43,7 @@ fun HomeScreen(
                 modifier = modifier.padding(innerPadding),
                 onSelectGameMode = {
 
-                    navOperations.navigateToDifficultyScreen(it.getTitleByGameMode(it))
+                    navOperations.navigateToDifficultyScreen(GameMode.getTitleByGameMode(it))
                 }
         )
 

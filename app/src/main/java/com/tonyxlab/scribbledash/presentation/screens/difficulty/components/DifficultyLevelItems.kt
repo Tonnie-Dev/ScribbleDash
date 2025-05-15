@@ -22,10 +22,11 @@ import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
 import com.tonyxlab.scribbledash.presentation.core.components.AppLabelText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
+import com.tonyxlab.scribbledash.presentation.screens.difficulty.handling.DifficultyUiEvent
 
 @Composable
 fun DifficultyItems(
-    onSelectDifficultyLevel: (DifficultyLevelHolder) -> Unit,
+    onSelectDifficultyLevel: (DifficultyUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val difficultyLevelHolders = listOf(
@@ -66,7 +67,43 @@ fun DifficultyItems(
             DifficultyLevelItem(
                     modifier = Modifier.padding(top = topPadding, end = endPadding),
                     difficultyLevel = item,
-                    onSelectDifficultyLevel = { onSelectDifficultyLevel(item) }
+                    onSelectDifficultyLevel = {
+
+                        when (item.difficultyLevel) {
+
+                            DifficultyLevel.BEGINNER -> {
+
+                                onSelectDifficultyLevel(
+                                        DifficultyUiEvent.OnSelectMasterLevel(
+                                                DifficultyLevel.BEGINNER
+                                        )
+                                )
+
+                            }
+
+                            DifficultyLevel.CHALLENGING -> {
+
+
+                                onSelectDifficultyLevel(
+                                        DifficultyUiEvent.OnSelectMasterLevel(
+                                                DifficultyLevel.CHALLENGING
+                                        )
+                                )
+                            }
+
+                            DifficultyLevel.MASTER -> {
+
+
+                                onSelectDifficultyLevel(
+                                        DifficultyUiEvent.OnSelectMasterLevel(
+                                                DifficultyLevel.MASTER
+                                        )
+                                )
+                            }
+                        }
+
+
+                    }
             )
         }
     }
@@ -76,11 +113,11 @@ fun DifficultyItems(
 @Composable
 fun DifficultyLevelItem(
     difficultyLevel: DifficultyLevelHolder,
-    onSelectDifficultyLevel: (DifficultyLevelHolder) -> Unit,
+    onSelectDifficultyLevel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
-            modifier = modifier.clickable { onSelectDifficultyLevel(difficultyLevel) },
+            modifier = modifier.clickable { onSelectDifficultyLevel() },
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceExtraSmall),
             horizontalAlignment = Alignment.CenterHorizontally
     ) {

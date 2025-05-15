@@ -49,6 +49,8 @@ fun AppCloseIcon(
     }
 
 }
+
+
 @PreviewLightDark
 @Composable
 fun AppCloseIconPreview(modifier: Modifier = Modifier) {

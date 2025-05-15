@@ -1,18 +1,14 @@
 package com.tonyxlab.scribbledash.presentation.screens.draw
 
-import android.app.Application
-import android.content.Context
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tonyxlab.scribbledash.presentation.core.base.BaseViewModel
+import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
-import com.tonyxlab.utils.DifficultyLevel
 import com.tonyxlab.utils.calculatePathSimilarity
 import com.tonyxlab.utils.toSvgPathStrings
 import kotlinx.coroutines.channels.Channel

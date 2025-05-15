@@ -46,7 +46,7 @@ fun NavGraphBuilder.appDestinations(
         DifficultyLevelScreen(
                 modifier = modifier,
                 navOperations = navOperations,
-                onSelectDifficultyLevel = { navController.navigate(DrawScreenDestination) }
+
         )
     }
 
