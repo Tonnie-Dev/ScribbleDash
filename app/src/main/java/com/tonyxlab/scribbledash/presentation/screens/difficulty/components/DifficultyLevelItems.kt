@@ -23,6 +23,7 @@ import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
 import com.tonyxlab.scribbledash.presentation.core.components.AppLabelText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.handling.DifficultyUiEvent
+import timber.log.Timber
 
 @Composable
 fun DifficultyItems(
@@ -72,7 +73,6 @@ fun DifficultyItems(
                         when (item.difficultyLevel) {
 
                             DifficultyLevel.BEGINNER -> {
-
                                 onSelectDifficultyLevel(
                                         DifficultyUiEvent.OnSelectMasterLevel(
                                                 DifficultyLevel.BEGINNER
@@ -83,7 +83,6 @@ fun DifficultyItems(
 
                             DifficultyLevel.CHALLENGING -> {
 
-
                                 onSelectDifficultyLevel(
                                         DifficultyUiEvent.OnSelectMasterLevel(
                                                 DifficultyLevel.CHALLENGING
@@ -92,7 +91,6 @@ fun DifficultyItems(
                             }
 
                             DifficultyLevel.MASTER -> {
-
 
                                 onSelectDifficultyLevel(
                                         DifficultyUiEvent.OnSelectMasterLevel(

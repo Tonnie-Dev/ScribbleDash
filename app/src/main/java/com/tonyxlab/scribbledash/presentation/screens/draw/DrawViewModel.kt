@@ -2,9 +2,12 @@ package com.tonyxlab.scribbledash.presentation.screens.draw
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
+import com.tonyxlab.scribbledash.navigation.Destinations
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
@@ -18,10 +21,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.util.logging.Level
 
 
 class DrawViewModel(
-    private val randomVectorProvider: () -> RandomVectorData
+    private val randomVectorProvider: () -> RandomVectorData,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _drawingUiState = MutableStateFlow(DrawUiState())
@@ -31,6 +37,12 @@ class DrawViewModel(
     val actionEvent = _actionEvent.receiveAsFlow()
 
     init {
+
+        val navArgs =
+            savedStateHandle.toRoute<Destinations.DrawScreenDestination>()
+
+        val gameLevel = navArgs.gameLevel
+        updateGameLevel(gameLevel = gameLevel)
         updateCountdown()
         pickNewRandomVector()
     }
@@ -128,13 +140,15 @@ class DrawViewModel(
 
     private fun submitDrawing() {
 
+        Timber.i("Level: ${_drawingUiState.value.difficultyLevel}")
+
         val similarityScore =
 
             calculatePathSimilarity(
 
                     referencePathStrings = _drawingUiState.value.currentSvgPath.paths,
                     userPathStrings = _drawingUiState.value.paths.toSvgPathStrings(),
-                    difficulty = DifficultyLevel.BEGINNER,
+                    difficulty = _drawingUiState.value.difficultyLevel,
                     canvasSize = _drawingUiState.value.canvasSize
             )
 
@@ -197,6 +211,12 @@ class DrawViewModel(
         _drawingUiState.update { it.copy(currentSvgPath = randomVectorProvider()) }
     }
 
+    private fun updateGameLevel(gameLevel: Int) {
+
+        val level = DifficultyLevel.entries[gameLevel]
+
+        _drawingUiState.update { it.copy(difficultyLevel = level) }
+    }
 
 }
 

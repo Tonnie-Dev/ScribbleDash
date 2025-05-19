@@ -1,6 +1,5 @@
 package com.tonyxlab.scribbledash.presentation.screens.difficulty
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeaderText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.DifficultyItems
-import com.tonyxlab.scribbledash.presentation.screens.difficulty.components.DifficultyLevelHolder
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.handling.DifficultyActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.difficulty.handling.DifficultyUiEvent
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
@@ -35,7 +33,6 @@ fun DifficultyLevelScreen(
     modifier: Modifier = Modifier,
     viewModel: DifficultyViewModel = koinViewModel()
 ) {
-
     BaseContentLayout(
             viewModel = viewModel,
             actionEventHandler = { _, action ->
@@ -46,39 +43,37 @@ fun DifficultyLevelScreen(
                     }
 
                     is DifficultyActionEvent.NavigateToDrawScreen -> {
-                        navOperations.navigateToDifficultyScreen()
+                        navOperations.navigateToDrawScreen(
+                                gameMode = action.mode,
+                                gameLevel = action.level
+                        )
                     }
                 }
-
-            }
+            },
+            onBackPressed = { navOperations.navigateToHomeDestination() }
     ) {
 
         DifficultyLevelScreenContent(
                 modifier = modifier,
-                onClose = { navOperations.popBackStack() },
-                onBackPress = { navOperations.navigateToHomeDestination() },
                 onEvent = viewModel::onEvent
         )
-
     }
 }
 
 @Composable
 fun DifficultyLevelScreenContent(
-    onClose: () -> Unit,
-    onBackPress: () -> Unit,
     onEvent: (DifficultyUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    //BackHandler { onBackPress() }
 
-    BackHandler { onBackPress() }
     Column(
             modifier = modifier
                     .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        AppCloseIcon(onClose = onClose)
+        AppCloseIcon(onClose = { onEvent(DifficultyUiEvent.OnClose) })
 
         Column(
                 modifier = Modifier
@@ -91,7 +86,6 @@ fun DifficultyLevelScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-
             AppHeaderText(
                     text = stringResource(id = R.string.button_text_start_drawing),
                     textStyle = MaterialTheme.typography.displayMedium
@@ -99,16 +93,8 @@ fun DifficultyLevelScreenContent(
             AppBodyText(text = stringResource(id = R.string.text_select_game_mode))
         }
 
-
-        DifficultyItems(onSelectDifficultyLevel = {
-            onEvent(
-                    DifficultyUiEvent.OnSelectMasterLevel(
-                            DifficultyLevel.CHALLENGING
-                    )
-            )
-        })
+        DifficultyItems(onSelectDifficultyLevel = onEvent)
     }
-
 
 }
 
@@ -124,7 +110,7 @@ private fun DifficultyLevelScreenContentPreview() {
                         .background(MaterialTheme.colorScheme.background)
         ) {
 
-            DifficultyLevelScreenContent(onClose = {}, onEvent = {}, onBackPress = {})
+            DifficultyLevelScreenContent(onEvent = {})
         }
     }
 }

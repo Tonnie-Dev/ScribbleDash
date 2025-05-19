@@ -23,6 +23,17 @@ class NavOperations(val navController: NavHostController) {
 
     }
 
+    fun navigateToDrawScreen(gameMode: Int = -1, gameLevel: Int) {
+
+        navController.navigate(
+                Destinations.DrawScreenDestination(
+                        gameMode = gameMode,
+                        gameLevel = gameLevel
+                )
+        )
+
+    }
+
     fun popBackStack() {
 
         navController.popBackStack()

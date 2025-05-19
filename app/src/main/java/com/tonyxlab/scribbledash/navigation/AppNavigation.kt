@@ -90,7 +90,7 @@ sealed class Destinations {
     data class DifficultyDestination(val gameMode: Int = -1) : Destinations()
 
     @Serializable
-    data  class DrawScreenDestination(val gameMode:Int) : Destinations()
+    data  class DrawScreenDestination(val gameMode:Int = -1, val gameLevel: Int = -1) : Destinations()
 
     @Serializable
     data class PreviewDestination(

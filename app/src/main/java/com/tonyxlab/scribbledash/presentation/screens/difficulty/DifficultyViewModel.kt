@@ -35,21 +35,21 @@ class DifficultyViewModel(savedStateHandle: SavedStateHandle) : DifficultyBaseVi
                     level = event.difficultyLevel.ordinal
             )
 
-            is DifficultyUiEvent.OnSelectChallengingLevel ->navigateToDraw(
+            is DifficultyUiEvent.OnSelectChallengingLevel -> navigateToDraw(
                     mode = currentState.gameMode.title,
                     level = event.difficultyLevel.ordinal
             )
+
             is DifficultyUiEvent.OnSelectMasterLevel -> navigateToDraw(
                     mode = currentState.gameMode.title,
                     level = event.difficultyLevel.ordinal
             )
+
             is DifficultyUiEvent.OnClose -> exit()
         }
     }
 
-
     private fun navigateToDraw(mode: Int, level: Int) {
-
         sendActionEvent(
                 DifficultyActionEvent.NavigateToDrawScreen(
                         mode = mode,
