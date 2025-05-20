@@ -24,8 +24,8 @@ import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 
 @Composable
 fun AppCloseIcon(
+    modifier: Modifier = Modifier,
     onClose: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Row(
             modifier = modifier
