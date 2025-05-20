@@ -69,8 +69,8 @@ fun PreviewScreen(
                     }
                 }
 
-
-            }) { previewUiState ->
+            }
+    ) { previewUiState ->
 
         PreviewContentScreen(
                 modifier = modifier,
@@ -78,39 +78,6 @@ fun PreviewScreen(
                 onEvent = viewModel::onEvent
         )
     }
-
-
-    /*
-        val state by viewModel.previewUiState.collectAsStateWithLifecycle()
-        val context = LocalContext.current
-
-
-        LaunchedEffect(true) {
-
-            viewModel.previewActionEvent.collect {
-
-                when (it) {
-
-                    PreviewActionEvent.TryAgain -> {
-                        navOperations.navigateToDifficultyScreen()
-                    }
-
-                    PreviewActionEvent.Exit -> {
-                        navOperations.popBackStack()
-                    }
-                }
-            }
-        }
-        Scaffold(containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
-
-
-            PreviewContentScreen(
-                    modifier = modifier.padding(innerPadding),
-                    uiState = ,
-
-                    onEvent = viewModel::onEvent
-            )
-        }*/
 
 }
 
