@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,22 +40,29 @@ fun CounterRow(
     drawings: Int,
     modifier: Modifier = Modifier
 ) {
-
-    Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    Box(
+            modifier = modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
     ) {
+        Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+        ) {
 
-        DrawTimeCounter(
-                timeText = timeText,
-                totalRemainingSecs = totalRemainingSecs
+            TimeCounter(
+                    timeText = timeText,
+                    totalRemainingSecs = totalRemainingSecs
+            )
+
+            AppCloseIcon {}
+        }
+
+        DrawingsCounter(
+                modifier = Modifier.align(Alignment.Center),
+                count = drawings
         )
-
-        DrawingsCounter(count = drawings)
-
-        AppCloseIcon {}
-
     }
 }
 
@@ -104,12 +112,10 @@ private fun DrawingsCounter(
 
     }
 
-
 }
 
-
 @Composable
-private fun DrawTimeCounter(
+private fun TimeCounter(
     timeText: String,
     totalRemainingSecs: Int,
     modifier: Modifier = Modifier,
@@ -140,6 +146,7 @@ private fun DrawTimeCounter(
 @PreviewLightDark
 @Composable
 private fun CounterRowPreview() {
+
     ScribbleDashTheme {
 
         Column(
@@ -154,8 +161,6 @@ private fun CounterRowPreview() {
             CounterRow(timeText = "1:00", totalRemainingSecs = 29, drawings = 30)
 
         }
-
-
     }
 }
 
