@@ -12,17 +12,24 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEv
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
+import com.tonyxlab.scribbledash.presentation.core.utils.CountdownTimer
+import com.tonyxlab.utils.Constants
 import com.tonyxlab.utils.calculatePathSimilarity
 import com.tonyxlab.utils.toSvgPathStrings
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.core.KoinApplication.Companion.init
 import timber.log.Timber
 import java.util.logging.Level
+import kotlin.concurrent.timer
 
 
 class DrawViewModel(
@@ -36,6 +43,9 @@ class DrawViewModel(
     private val _actionEvent = Channel<DrawActionEvent>()
     val actionEvent = _actionEvent.receiveAsFlow()
 
+    var countdownTimer: CountdownTimer? = null
+
+
     init {
 
         val navArgs =
@@ -43,6 +53,8 @@ class DrawViewModel(
 
         val gameLevel = navArgs.gameLevel
         updateGameLevel(gameLevel = gameLevel)
+
+
         updateCountdown()
         pickNewRandomVector()
     }
@@ -140,7 +152,6 @@ class DrawViewModel(
 
     private fun submitDrawing() {
 
-        Timber.i("Level: ${_drawingUiState.value.difficultyLevel}")
 
         val similarityScore =
 
@@ -152,7 +163,6 @@ class DrawViewModel(
                     canvasSize = _drawingUiState.value.canvasSize
             )
 
-        val randomSimilarityScore = (0..100).random()
         _drawingUiState.update {
             it.copy(similarityScore = similarityScore)
         }
@@ -172,15 +182,6 @@ class DrawViewModel(
         }
 
 
-        /* _drawingUiState.update {
-             it.copy(
-                     currentPath = null,
-                     paths = emptyList(),
-                     undoStack = emptyList()
-             )
-         }
-
-         updateButtonsState()*/
     }
 
     private fun updateButtonsState() {
@@ -195,16 +196,24 @@ class DrawViewModel(
         }
     }
 
-    private fun updateCountdown(secs: Int = 3) {
+    private fun updateCountdown() {
 
-        viewModelScope.launch {
+        countdownTimer?.stop() // // Clean up the old one if needed
 
-            for (i in secs downTo 0) {
+        countdownTimer =
+            CountdownTimer(totalSeconds = Constants.PREVIEW_TIME_IN_SECS).also { timer ->
 
-                _drawingUiState.update { it.copy(remainingSecs = i) }
-                delay(1_000)
+                timer.start()
+
+                timer.remainingSeconds.onEach { secs ->
+
+                    _drawingUiState.update { it.copy(remainingSecs = secs) }
+
+                }
+                        .launchIn(viewModelScope)
             }
-        }
+
+
     }
 
     fun pickNewRandomVector() {
@@ -217,6 +226,12 @@ class DrawViewModel(
 
         _drawingUiState.update { it.copy(difficultyLevel = level) }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        countdownTimer?.pause()
+    }
+
 
 }
 
