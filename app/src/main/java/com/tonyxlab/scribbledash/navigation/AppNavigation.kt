@@ -5,7 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.tonyxlab.scribbledash.R
+import com.tonyxlab.scribbledash.domain.model.GameMode
 import com.tonyxlab.scribbledash.navigation.Destinations.DifficultyDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.StatsDestination
 import com.tonyxlab.scribbledash.navigation.Destinations.DrawScreenDestination
@@ -51,9 +53,10 @@ fun NavGraphBuilder.appDestinations(
     }
 
     composable<DrawScreenDestination> {
-
+val drawScreenDestination = it.toRoute<DrawScreenDestination>()
         DrawScreen(
                 modifier = modifier,
+                gameMode = GameMode. getGameModeByTitle(drawScreenDestination.gameMode),
                 onClose = { navController.popBackStack() },
                 onSubmit = { sampleSvgStrings, userPathStrings, viewPortWidth, viewPortHeight, similarityScore ->
 
