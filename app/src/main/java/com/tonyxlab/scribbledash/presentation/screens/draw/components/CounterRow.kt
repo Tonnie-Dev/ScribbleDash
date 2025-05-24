@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,16 +16,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.scribbledash.R
+import com.tonyxlab.scribbledash.domain.model.Game
 import com.tonyxlab.scribbledash.domain.model.GameMode
+import com.tonyxlab.scribbledash.domain.model.formatRemainingSecs
 import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeaderText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
@@ -36,38 +39,34 @@ import com.tonyxlab.scribbledash.presentation.theme.headlineXSmall
 
 @Composable
 fun CounterRow(
-    timeText: String,
-    totalRemainingSecs: Int,
-    drawings: Int,
+    game: Game,
+    onClose: () -> Unit,
     modifier: Modifier = Modifier,
-    gameMode: GameMode
 ) {
-    Box(
-            modifier = modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-    ) {
+    Box {
         Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier
+                        .fillMaxWidth()
+                        .height(MaterialTheme.spacing.spaceTwelve * 6),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
         ) {
 
-            TimeCounter(
-                    timeText = timeText,
-                    totalRemainingSecs = totalRemainingSecs
-            )
+            if (game.mode is GameMode.SpeedDraw) {
+                TimeCounter(game = game)
+            }
 
-            AppCloseIcon {}
+            AppCloseIcon { onClose() }
         }
 
+        if (game.mode is GameMode.SpeedDraw || game.mode is GameMode.EndlessMode) {
             DrawingsCounter(
                     modifier = Modifier.align(Alignment.Center),
-                    count = drawings
+                    count = game.drawingsCount
             )
         }
     }
-
+}
 
 @Composable
 private fun DrawingsCounter(
@@ -83,7 +82,7 @@ private fun DrawingsCounter(
                 modifier = Modifier
                         .offset(x = MaterialTheme.spacing.spaceMedium)
                         .background(
-                                color = MaterialTheme.colorScheme.background,
+                                color = MaterialTheme.colorScheme.surfaceContainerLow,
                                 shape = RoundedCornerShape(MaterialTheme.spacing.spaceOneHundred)
                         )
                         .width(MaterialTheme.spacing.spaceDoubleDp * 30)
@@ -99,6 +98,7 @@ private fun DrawingsCounter(
         ) {
 
             AppHeaderText(
+                    modifier = Modifier.fillMaxWidth(),
                     text = count.toString(),
                     textStyle = MaterialTheme.typography.headlineXSmall,
             )
@@ -119,29 +119,37 @@ private fun DrawingsCounter(
 
 @Composable
 private fun TimeCounter(
-    timeText: String,
-    totalRemainingSecs: Int,
+    game: Game,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.headlineXSmall,
 ) {
-    Box(
+    Surface(
             modifier = modifier
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface)
-                    .size(MaterialTheme.spacing.spaceTwelve * 4),
-            contentAlignment = Alignment.Center
+                    .shadow(elevation = MaterialTheme.spacing.spaceSmall)
+
+
     ) {
-        val textColor = if (totalRemainingSecs <= 30)
-            Error
-        else
-            MaterialTheme.colorScheme.onBackground
+        Box(
+                modifier = Modifier
+                        .clip(CircleShape)
+
+                        .size(MaterialTheme.spacing.spaceDoubleDp * 28)
+                        .padding(MaterialTheme.spacing.spaceExtraSmall),
+                contentAlignment = Alignment.Center
+        ) {
+            val textColor = if (game.remainingSecs <= 30)
+                Error
+            else
+                MaterialTheme.colorScheme.onBackground
 
 
-        Text(
-                text = timeText,
-                style = textStyle.copy(color = textColor)
-        )
+            Text(
+                    text = game.formatRemainingSecs(),
+                    style = textStyle.copy(color = textColor)
+            )
 
+        }
     }
 
 }
@@ -160,24 +168,50 @@ private fun CounterRowPreview() {
         ) {
 
             CounterRow(
-                    timeText = "2:00",
-                    totalRemainingSecs = 50,
-                    drawings = 0,
-                    gameMode = GameMode.OneRoundWonder
+                    game = Game(mode = GameMode.OneRoundWonder),
+                    onClose = {}
             )
 
             CounterRow(
-                    timeText = "2:00",
-                    totalRemainingSecs = 30,
-                    drawings = 8,
-                    gameMode = GameMode.SpeedDraw
+                    game = Game(
+                            mode = GameMode.SpeedDraw,
+                            remainingSecs = 120,
+                            drawingsCount = 13
+                    ),
+                    onClose = {}
             )
 
             CounterRow(
-                    timeText = "1:00",
-                    totalRemainingSecs = 29,
-                    drawings = 30,
-                    gameMode = GameMode.EndlessMode
+                    game = Game(
+                            mode = GameMode.SpeedDraw,
+                            remainingSecs = 70,
+                            drawingsCount = 13
+                    ),
+                    onClose = {}
+            )
+
+            CounterRow(
+                    game = Game(
+                            mode = GameMode.SpeedDraw,
+                            remainingSecs = 69,
+                            drawingsCount = 13
+                    ),
+                    onClose = {}
+            )
+            CounterRow(
+                    game = Game(
+                            mode = GameMode.SpeedDraw,
+                            remainingSecs = 20,
+                            drawingsCount = 13
+                    ),
+                    onClose = {}
+            )
+            CounterRow(
+                    game = Game(
+                            mode = GameMode.EndlessMode,
+                            drawingsCount = 23
+                    ),
+                    onClose = {}
             )
         }
     }
