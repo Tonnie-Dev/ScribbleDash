@@ -18,23 +18,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tonyxlab.scribbledash.R
+import com.tonyxlab.scribbledash.domain.model.Game
+import com.tonyxlab.scribbledash.domain.model.GameMode
 import com.tonyxlab.scribbledash.presentation.core.components.AppButton
-import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeaderText
 import com.tonyxlab.scribbledash.presentation.core.components.AppIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppLabelText
 import com.tonyxlab.scribbledash.presentation.core.components.DrawingCanvas
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
+import com.tonyxlab.scribbledash.presentation.screens.draw.components.CounterRow
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
+import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.PathData
-import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.scribbledash.presentation.theme.Success
 import com.tonyxlab.utils.drawCustomPaths
@@ -44,6 +45,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DrawScreen(
+    gameMode: GameMode,
     onClose: () -> Unit,
     onSubmit: (List<String>, List<String>, Float, Float, Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -75,6 +77,7 @@ fun DrawScreen(
 
         DrawScreenContent(
                 modifier = modifier.padding(innerPadding),
+                game = Game().copy(mode = gameMode),
                 remainingSecs = state.remainingSecs,
                 currentPath = state.currentPath,
                 paths = state.paths,
@@ -90,6 +93,7 @@ fun DrawScreen(
 
 @Composable
 fun DrawScreenContent(
+    game: Game,
     currentPath: PathData?,
     paths: List<PathData>,
     sampleSvgPath: List<String>,
@@ -102,25 +106,14 @@ fun DrawScreenContent(
     remainingSecs: Int
 ) {
 
-
     val canDraw = remainingSecs < 1
-    val context = LocalContext.current
 
-
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppCloseIcon(
-                modifier = Modifier.padding(
-                        top = MaterialTheme.spacing.spaceSmall,
-                        bottom = MaterialTheme.spacing.spaceTwelve * 4
-                ),
-                onClose = onClose
-        )
+    Column(modifier = modifier.fillMaxSize()) {
+        CounterRow(game = game, onClose = onClose)
         Column(
                 modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
 
             AppHeaderText(
                     modifier = Modifier.padding(
@@ -138,19 +131,21 @@ fun DrawScreenContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceDoubleDp)
             ) {
-                DrawingCanvas(modifier = Modifier.onSizeChanged{
-
-
-                    size ->
-
-                    onAction(DrawUiEvent.OnCanvasSizeChanged(Size(size.width.toFloat(), size.height.toFloat())))
-                },
+                DrawingCanvas(
+                        modifier = Modifier.onSizeChanged { size ->
+                            onAction(
+                                    DrawUiEvent.OnCanvasSizeChanged(
+                                            Size(
+                                                    size.width.toFloat(),
+                                                    size.height.toFloat()
+                                            )
+                                    )
+                            )
+                        },
 
                         onAction = onAction,
-
                         canDraw = canDraw,
                         onCustomDraw = {
-
 
                             paths.fastForEach { pathData ->
                                 drawCustomPaths(path = pathData.path, color = pathData.color)
@@ -259,7 +254,8 @@ private fun DrawScreenContentWithTwoSecsPreview() {
                     sampleSvgPath = emptyList(),
                     viewPortWidth = 0f,
                     viewPortHeight = 0f,
-                    onAction = {}
+                    onAction = {},
+                    game = Game()
             )
         }
     }
@@ -284,7 +280,8 @@ private fun DrawScreenContentWithZeroSecPreview() {
                     sampleSvgPath = emptyList(),
                     viewPortWidth = 0f,
                     viewPortHeight = 0f,
-                    onAction = {}
+                    onAction = {},
+                    game = Game(mode = GameMode.SpeedDraw)
             )
         }
     }
