@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.scribbledash.R
+import com.tonyxlab.scribbledash.domain.model.GameMode
 import com.tonyxlab.scribbledash.presentation.core.components.AppCloseIcon
 import com.tonyxlab.scribbledash.presentation.core.components.AppHeaderText
 import com.tonyxlab.scribbledash.presentation.core.utils.spacing
@@ -38,7 +39,8 @@ fun CounterRow(
     timeText: String,
     totalRemainingSecs: Int,
     drawings: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    gameMode: GameMode
 ) {
     Box(
             modifier = modifier
@@ -59,12 +61,13 @@ fun CounterRow(
             AppCloseIcon {}
         }
 
-        DrawingsCounter(
-                modifier = Modifier.align(Alignment.Center),
-                count = drawings
-        )
+            DrawingsCounter(
+                    modifier = Modifier.align(Alignment.Center),
+                    count = drawings
+            )
+        }
     }
-}
+
 
 @Composable
 private fun DrawingsCounter(
@@ -148,7 +151,6 @@ private fun TimeCounter(
 private fun CounterRowPreview() {
 
     ScribbleDashTheme {
-
         Column(
                 modifier = Modifier
                         .fillMaxSize()
@@ -156,10 +158,27 @@ private fun CounterRowPreview() {
                         .padding(MaterialTheme.spacing.spaceMedium),
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceMedium)
         ) {
-            CounterRow(timeText = "2:00", totalRemainingSecs = 50, drawings = 0)
-            CounterRow(timeText = "2:00", totalRemainingSecs = 30, drawings = 8)
-            CounterRow(timeText = "1:00", totalRemainingSecs = 29, drawings = 30)
 
+            CounterRow(
+                    timeText = "2:00",
+                    totalRemainingSecs = 50,
+                    drawings = 0,
+                    gameMode = GameMode.OneRoundWonder
+            )
+
+            CounterRow(
+                    timeText = "2:00",
+                    totalRemainingSecs = 30,
+                    drawings = 8,
+                    gameMode = GameMode.SpeedDraw
+            )
+
+            CounterRow(
+                    timeText = "1:00",
+                    totalRemainingSecs = 29,
+                    drawings = 30,
+                    gameMode = GameMode.EndlessMode
+            )
         }
     }
 }
