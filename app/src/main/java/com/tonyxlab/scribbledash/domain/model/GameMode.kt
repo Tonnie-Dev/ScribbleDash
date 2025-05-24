@@ -52,5 +52,15 @@ sealed class GameMode(
             }
         }
 
+        fun getGameModeByCode(code:Int): GameMode{
+
+           return when(code){
+
+               1 -> OneRoundWonder
+               2 -> SpeedDraw
+               else -> EndlessMode
+           }
+        }
+
     }
 }
