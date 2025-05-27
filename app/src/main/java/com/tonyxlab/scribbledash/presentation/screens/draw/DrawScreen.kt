@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -109,7 +110,7 @@ fun DrawScreenContent(
     val canDraw = remainingSecs < 1
 
     Column(modifier = modifier.fillMaxSize()) {
-        CounterRow(game = game, onClose = onClose)
+        CounterRow( game = game, onClose = onClose)
         Column(
                 modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -127,7 +128,7 @@ fun DrawScreenContent(
             )
 
             Column(
-                    modifier = Modifier.padding(bottom = MaterialTheme.spacing.spaceOneTwentyEight),
+
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceDoubleDp)
             ) {
@@ -185,6 +186,8 @@ fun DrawScreenContent(
                 )
             }
 
+            Spacer(modifier = Modifier.weight(1f))
+
             if (canDraw) {
 
                 Row(
@@ -192,7 +195,9 @@ fun DrawScreenContent(
                         horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)) {
+                    Row(
+                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)
+                    ) {
                         AppIcon(
                                 enabled = buttonsState.undoButtonEnabled,
                                 icon = R.drawable.ic_reply,
@@ -208,9 +213,7 @@ fun DrawScreenContent(
                     AppButton(
                             modifier = Modifier
                                     .height(MaterialTheme.spacing.spaceExtraLarge)
-                                    .width(
-                                            IntrinsicSize.Min
-                                    ),
+                                    .width(IntrinsicSize.Min),
                             enabled = buttonsState.submitButtonEnabled,
                             buttonText = stringResource(R.string.button_text_done),
                             containerColor = Success,
