@@ -109,44 +109,61 @@ fun DrawScreenContent(
 
     val canDraw = remainingSecs < 1
 
-    Column(modifier = modifier.fillMaxSize()) {
-        CounterRow( game = game, onClose = onClose)
+    //Column(modifier = modifier.fillMaxSize()) {
+    Column(
+            //     modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
+            modifier = modifier.fillMaxSize(),
+
+            horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CounterRow(
+                game = game,
+                onClose = onClose
+        )
+
+        Spacer(modifier = Modifier.height(MaterialTheme.spacing.spaceDoubleDp * 41))
+
+        AppHeaderText(
+                modifier = Modifier.padding(
+                        bottom = MaterialTheme.spacing.spaceLarge,
+                ),
+                textStyle = MaterialTheme.typography.displayMedium,
+                text = if (canDraw)
+                    stringResource(R.string.headline_time_to_draw)
+                else
+                    stringResource(R.string.headline_ready_set)
+        )
+
         Column(
-                modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.padding(horizontal = MaterialTheme.spacing.spaceTen * 3),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceDoubleDp)
         ) {
+            DrawingCanvas(
+                    modifier = Modifier.onSizeChanged { size ->
+                        onAction(
+                                DrawUiEvent.OnCanvasSizeChanged(
+                                        Size(
+                                                size.width.toFloat(),
+                                                size.height.toFloat()
+                                        )
+                                )
+                        )
+                    },
 
-            AppHeaderText(
-                    modifier = Modifier.padding(
-                            bottom = MaterialTheme.spacing.spaceTwelve * 4,
-                    ),
-                    textStyle = MaterialTheme.typography.displayMedium,
-                    text = if (canDraw)
-                        stringResource(R.string.headline_time_to_draw)
-                    else
-                        stringResource(R.string.headline_ready_set)
-            )
+                    onAction = onAction,
+                    canDraw = canDraw,
+                    onCustomDraw = {
 
-            Column(
+                        paths.fastForEach { pathData ->
+                            drawCustomPaths(path = pathData.path, color = pathData.color)
+                        }
 
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceDoubleDp)
-            ) {
-                DrawingCanvas(
-                        modifier = Modifier.onSizeChanged { size ->
-                            onAction(
-                                    DrawUiEvent.OnCanvasSizeChanged(
-                                            Size(
-                                                    size.width.toFloat(),
-                                                    size.height.toFloat()
-                                            )
-                                    )
-                            )
-                        },
+                        currentPath?.let {
+                            drawCustomPaths(path = it.path, color = it.color)
+                        }
 
-                        onAction = onAction,
-                        canDraw = canDraw,
-                        onCustomDraw = {
+                        if (canDraw) {
 
                             paths.fastForEach { pathData ->
                                 drawCustomPaths(path = pathData.path, color = pathData.color)
@@ -156,86 +173,76 @@ fun DrawScreenContent(
                                 drawCustomPaths(path = it.path, color = it.color)
                             }
 
-                            if (canDraw) {
+                        } else {
 
-                                paths.fastForEach { pathData ->
-                                    drawCustomPaths(path = pathData.path, color = pathData.color)
-                                }
-
-                                currentPath?.let {
-                                    drawCustomPaths(path = it.path, color = it.color)
-                                }
-
-                            } else {
-
-                                drawSvgVector(
-                                        vectorPaths = sampleSvgPath,
-                                        viewportWidth = viewPortWidth,
-                                        viewportHeight = viewPortHeight
-                                )
-                            }
-
+                            drawSvgVector(
+                                    vectorPaths = sampleSvgPath,
+                                    viewportWidth = viewPortWidth,
+                                    viewportHeight = viewPortHeight
+                            )
                         }
 
-                )
-                AppLabelText(
-                        if (canDraw)
-                            stringResource(R.string.text_your_drawing)
-                        else
-                            stringResource(R.string.text_example)
-                )
-            }
+                    }
 
-            Spacer(modifier = Modifier.weight(1f))
+            )
+            AppLabelText(
+                    if (canDraw)
+                        stringResource(R.string.text_your_drawing)
+                    else
+                        stringResource(R.string.text_example)
+            )
+        }
 
-            if (canDraw) {
+        Spacer(modifier = Modifier.weight(1f))
+
+        if (canDraw) {
+
+            Row(
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(MaterialTheme.spacing.spaceTen * 3),
+                    horizontalArrangement = Arrangement.SpaceBetween
+            ) {
 
                 Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)
                 ) {
+                    AppIcon(
+                            enabled = buttonsState.undoButtonEnabled,
+                            icon = R.drawable.ic_reply,
+                            onClick = { onAction(DrawUiEvent.OnUnDo) }
+                    )
 
-                    Row(
-                            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.spaceTwelve)
-                    ) {
-                        AppIcon(
-                                enabled = buttonsState.undoButtonEnabled,
-                                icon = R.drawable.ic_reply,
-                                onClick = { onAction(DrawUiEvent.OnUnDo) }
-                        )
-
-                        AppIcon(
-                                enabled = buttonsState.redoButtonEnabled,
-                                icon = R.drawable.ic_forward,
-                                onClick = { onAction(DrawUiEvent.OnRedo) }
-                        )
-                    }
-                    AppButton(
-                            modifier = Modifier
-                                    .height(MaterialTheme.spacing.spaceExtraLarge)
-                                    .width(IntrinsicSize.Min),
-                            enabled = buttonsState.submitButtonEnabled,
-                            buttonText = stringResource(R.string.button_text_done),
-                            containerColor = Success,
-                            onClick = {
-
-                                onAction(
-                                        DrawUiEvent.OnSubmitDrawing(
-                                                sampleSvgPathData = sampleSvgPath,
-                                                userPathData = paths.toSvgPathStrings(),
-                                                viewPortWidth = viewPortWidth,
-                                                viewPortHeight = viewPortHeight
-                                        )
-                                )
-                            }
+                    AppIcon(
+                            enabled = buttonsState.redoButtonEnabled,
+                            icon = R.drawable.ic_forward,
+                            onClick = { onAction(DrawUiEvent.OnRedo) }
                     )
                 }
-            } else {
-                AppHeaderText(text = stringResource(R.string.text_seconds_left, remainingSecs))
+                AppButton(
+                        modifier = Modifier
+                                .height(MaterialTheme.spacing.spaceExtraLarge)
+                                .width(IntrinsicSize.Min),
+                        enabled = buttonsState.submitButtonEnabled,
+                        buttonText = stringResource(R.string.button_text_done),
+                        containerColor = Success,
+                        onClick = {
+
+                            onAction(
+                                    DrawUiEvent.OnSubmitDrawing(
+                                            sampleSvgPathData = sampleSvgPath,
+                                            userPathData = paths.toSvgPathStrings(),
+                                            viewPortWidth = viewPortWidth,
+                                            viewPortHeight = viewPortHeight
+                                    )
+                            )
+                        }
+                )
             }
+        } else {
+            AppHeaderText(text = stringResource(R.string.text_seconds_left, remainingSecs))
         }
     }
-
 }
 
 
