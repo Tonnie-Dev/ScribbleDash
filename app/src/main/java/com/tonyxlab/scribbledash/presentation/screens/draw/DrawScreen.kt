@@ -43,6 +43,7 @@ import com.tonyxlab.utils.drawCustomPaths
 import com.tonyxlab.utils.drawSvgVector
 import com.tonyxlab.utils.toSvgPathStrings
 import org.koin.androidx.compose.koinViewModel
+import timber.log.Timber
 
 @Composable
 fun DrawScreen(
@@ -78,8 +79,8 @@ fun DrawScreen(
 
         DrawScreenContent(
                 modifier = modifier.padding(innerPadding),
-                game = Game().copy(mode = gameMode),
-                remainingSecs = state.remainingSecs,
+                game = Game().copy(mode = gameMode, remainingSecs = state.remainingSpeedDrawSeconds),
+                remainingSecs = state.remainingPreviewSeconds,
                 currentPath = state.currentPath,
                 paths = state.paths,
                 onClose = onClose,
@@ -107,13 +108,12 @@ fun DrawScreenContent(
     remainingSecs: Int
 ) {
 
+    Timber.i("DSC called: ${game.remainingSecs}")
     val canDraw = remainingSecs < 1
 
-    //Column(modifier = modifier.fillMaxSize()) {
-    Column(
-            //     modifier = modifier.padding(MaterialTheme.spacing.spaceTen * 3),
-            modifier = modifier.fillMaxSize(),
 
+    Column(
+            modifier = modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CounterRow(

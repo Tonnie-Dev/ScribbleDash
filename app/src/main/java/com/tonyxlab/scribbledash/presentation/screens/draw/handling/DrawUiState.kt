@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import com.tonyxlab.scribbledash.data.ColorSerializer
 import com.tonyxlab.scribbledash.data.ListOffsetSerializer
 import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
+import com.tonyxlab.scribbledash.domain.model.GameMode
 import kotlinx.serialization.Serializable
 
 @Stable
@@ -17,9 +18,11 @@ data class DrawUiState(
     val currentSvgPath: RandomVectorData = RandomVectorData(),
     val buttonsState: ButtonsState = ButtonsState(),
     val undoStack: List<PathData> = emptyList(),
-    val remainingSecs: Int = 0,
+    val remainingPreviewSeconds: Int = 0,
+    val remainingSpeedDrawSeconds: Int = 0,
     val canvasSize: Size = Size.Zero,
     val similarityScore: Int = 0,
+    val gameMode: GameMode = GameMode.OneRoundWonder,
     val difficultyLevel: DifficultyLevel = DifficultyLevel.BEGINNER
 ) {
 

@@ -7,18 +7,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
+import com.tonyxlab.scribbledash.domain.model.GameMode
 import com.tonyxlab.scribbledash.navigation.Destinations
+import com.tonyxlab.scribbledash.presentation.core.utils.CountdownTimer
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.RandomVectorData
-import com.tonyxlab.scribbledash.presentation.core.utils.CountdownTimer
 import com.tonyxlab.utils.Constants
 import com.tonyxlab.utils.calculatePathSimilarity
 import com.tonyxlab.utils.toSvgPathStrings
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -26,9 +25,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.KoinApplication.Companion.init
-import timber.log.Timber
-import java.util.logging.Level
 import kotlin.concurrent.timer
 
 
@@ -43,7 +39,8 @@ class DrawViewModel(
     private val _actionEvent = Channel<DrawActionEvent>()
     val actionEvent = _actionEvent.receiveAsFlow()
 
-    var countdownTimer: CountdownTimer? = null
+    var previewCountdownTimer: CountdownTimer? = null
+    var speedDrawCountdownTimer: CountdownTimer? = null
 
 
     init {
@@ -52,8 +49,9 @@ class DrawViewModel(
             savedStateHandle.toRoute<Destinations.DrawScreenDestination>()
 
         val gameLevel = navArgs.gameLevel
+        val gameMode = GameMode.getGameModeByTitle(navArgs.gameMode)
         updateGameLevel(gameLevel = gameLevel)
-
+        updateGameMode(gameMode)
 
         updateCountdown()
         pickNewRandomVector()
@@ -79,9 +77,9 @@ class DrawViewModel(
     }
 
     private fun onDraw(offset: Offset) {
-
         val currentPathData = _drawingUiState.value.currentPath ?: return
 
+        updateDrawTime()
         _drawingUiState.update {
             it.copy(
                     currentPath = currentPathData.copy(
@@ -92,6 +90,23 @@ class DrawViewModel(
             )
         }
 
+    }
+
+    private fun updateDrawTime() {
+        if (_drawingUiState.value.gameMode is GameMode.SpeedDraw) {
+            speedDrawCountdownTimer?.stop()
+
+            speedDrawCountdownTimer = CountdownTimer(120).also { timer ->
+
+                timer.start()
+                timer.remainingSeconds.onEach { secs ->
+
+                    _drawingUiState.update { it.copy(remainingSpeedDrawSeconds = secs) }
+                }
+                        .launchIn(viewModelScope)
+            }
+
+        }
     }
 
     private fun startDrawing() {
@@ -198,16 +213,16 @@ class DrawViewModel(
 
     private fun updateCountdown() {
 
-        countdownTimer?.stop() // // Clean up the old one if needed
+        previewCountdownTimer?.stop() // // Clean up the old one if needed
 
-        countdownTimer =
+        previewCountdownTimer =
             CountdownTimer(totalSeconds = Constants.PREVIEW_TIME_IN_SECS).also { timer ->
 
                 timer.start()
 
                 timer.remainingSeconds.onEach { secs ->
 
-                    _drawingUiState.update { it.copy(remainingSecs = secs) }
+                    _drawingUiState.update { it.copy(remainingPreviewSeconds = secs) }
 
                 }
                         .launchIn(viewModelScope)
@@ -227,9 +242,15 @@ class DrawViewModel(
         _drawingUiState.update { it.copy(difficultyLevel = level) }
     }
 
+
+    private fun updateGameMode(gameMode: GameMode) {
+
+        _drawingUiState.update { it.copy(gameMode = gameMode) }
+    }
+
     override fun onCleared() {
         super.onCleared()
-        countdownTimer?.pause()
+        previewCountdownTimer?.pause()
     }
 
 
