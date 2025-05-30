@@ -10,6 +10,7 @@ import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
 import com.tonyxlab.scribbledash.domain.model.GameMode
 import com.tonyxlab.scribbledash.navigation.Destinations
 import com.tonyxlab.scribbledash.presentation.core.utils.CountdownTimer
+import com.tonyxlab.scribbledash.presentation.screens.draw.gamemode.speed.SpeedGameState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
@@ -25,7 +26,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.concurrent.timer
+import org.koin.core.KoinApplication.Companion.init
+import timber.log.Timber
 
 
 class DrawViewModel(
@@ -36,11 +38,14 @@ class DrawViewModel(
     private val _drawingUiState = MutableStateFlow(DrawUiState())
     val drawingUiState = _drawingUiState.asStateFlow()
 
+    private val _speedDrawState = MutableStateFlow(SpeedGameState.PreviewDrawing)
+    val  speedDrawState = _speedDrawState.asStateFlow()
+
     private val _actionEvent = Channel<DrawActionEvent>()
     val actionEvent = _actionEvent.receiveAsFlow()
 
     var previewCountdownTimer: CountdownTimer? = null
-    var speedDrawCountdownTimer: CountdownTimer? = null
+    var speedDrawCountdownTimer: CountdownTimer = CountdownTimer(120)
 
 
     init {
@@ -53,7 +58,7 @@ class DrawViewModel(
         updateGameLevel(gameLevel = gameLevel)
         updateGameMode(gameMode)
 
-        updateCountdown()
+        updatePreviewTimeCountdown()
         pickNewRandomVector()
     }
 
@@ -79,7 +84,7 @@ class DrawViewModel(
     private fun onDraw(offset: Offset) {
         val currentPathData = _drawingUiState.value.currentPath ?: return
 
-        updateDrawTime()
+
         _drawingUiState.update {
             it.copy(
                     currentPath = currentPathData.copy(
@@ -94,11 +99,16 @@ class DrawViewModel(
 
     private fun updateDrawTime() {
         if (_drawingUiState.value.gameMode is GameMode.SpeedDraw) {
-            speedDrawCountdownTimer?.stop()
+            //speedDrawCountdownTimer?.stop()
 
             speedDrawCountdownTimer = CountdownTimer(120).also { timer ->
 
-                timer.start()
+                if (timer.isRunning.not()){
+
+                    Timber.i("updateDrawTime() has started the timer: ${timer.isRunning}")
+                    timer.start()
+                }
+
                 timer.remainingSeconds.onEach { secs ->
 
                     _drawingUiState.update { it.copy(remainingSpeedDrawSeconds = secs) }
@@ -110,6 +120,10 @@ class DrawViewModel(
     }
 
     private fun startDrawing() {
+
+        Timber.i("Inside startDrawing(), time is ${speedDrawCountdownTimer?.isRunning}")
+
+        updateDrawTime()
         _drawingUiState.update {
 
             it.copy(currentPath = DrawUiState.PathData(id = System.currentTimeMillis()))
@@ -211,9 +225,11 @@ class DrawViewModel(
         }
     }
 
-    private fun updateCountdown() {
+    private fun updatePreviewTimeCountdown() {
 
         previewCountdownTimer?.stop() // // Clean up the old one if needed
+
+
 
         previewCountdownTimer =
             CountdownTimer(totalSeconds = Constants.PREVIEW_TIME_IN_SECS).also { timer ->

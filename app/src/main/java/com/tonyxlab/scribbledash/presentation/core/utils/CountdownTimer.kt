@@ -13,7 +13,10 @@ class CountdownTimer(private val totalSeconds: Int) {
     private val _remainingSeconds = MutableStateFlow(totalSeconds)
     val remainingSeconds = _remainingSeconds.asStateFlow()
 
-    private var isRunning = false
+    var isRunning = false
+        private set
+
+
     private var elapsedSeconds = 0
 
     private var job: Job? = null
