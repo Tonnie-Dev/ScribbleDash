@@ -24,8 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.scribbledash.R
 import com.tonyxlab.scribbledash.domain.model.Game
@@ -37,6 +40,7 @@ import com.tonyxlab.scribbledash.presentation.core.utils.spacing
 import com.tonyxlab.scribbledash.presentation.theme.Error
 import com.tonyxlab.scribbledash.presentation.theme.ScribbleDashTheme
 import com.tonyxlab.scribbledash.presentation.theme.headlineXSmall
+import timber.log.Timber
 
 @Composable
 fun CounterRow(
@@ -139,7 +143,6 @@ private fun TimeCounter(
         Box(
                 modifier = Modifier
                         .clip(CircleShape)
-
                         .size(MaterialTheme.spacing.spaceDoubleDp * 28)
                         .padding(MaterialTheme.spacing.spaceExtraSmall),
                 contentAlignment = Alignment.Center
@@ -151,8 +154,11 @@ private fun TimeCounter(
 
 
             Text(
+                    modifier = Modifier.fillMaxWidth(),
                     text = game.formatRemainingSecs(),
-                    style = textStyle.copy(color = textColor)
+                    style = textStyle.copy(color = textColor),
+                    textAlign = TextAlign.Center,
+
             )
 
         }

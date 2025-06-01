@@ -108,7 +108,7 @@ fun DrawScreenContent(
     remainingSecs: Int
 ) {
 
-    Timber.i("DSC called: ${game.remainingSecs}")
+
     val canDraw = remainingSecs < 1
 
 

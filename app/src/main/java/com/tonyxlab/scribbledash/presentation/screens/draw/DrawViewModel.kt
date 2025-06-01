@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.KoinApplication.Companion.init
 import timber.log.Timber
 
 
@@ -39,13 +38,13 @@ class DrawViewModel(
     val drawingUiState = _drawingUiState.asStateFlow()
 
     private val _speedDrawState = MutableStateFlow(SpeedGameState.PreviewDrawing)
-    val  speedDrawState = _speedDrawState.asStateFlow()
+    val speedDrawState = _speedDrawState.asStateFlow()
 
     private val _actionEvent = Channel<DrawActionEvent>()
     val actionEvent = _actionEvent.receiveAsFlow()
 
     var previewCountdownTimer: CountdownTimer? = null
-    var speedDrawCountdownTimer: CountdownTimer = CountdownTimer(120)
+    var speedDrawCountdownTimer: CountdownTimer? = null
 
 
     init {
@@ -97,33 +96,29 @@ class DrawViewModel(
 
     }
 
-    private fun updateDrawTime() {
-        if (_drawingUiState.value.gameMode is GameMode.SpeedDraw) {
-            //speedDrawCountdownTimer?.stop()
+    private fun launchSpeedDrawTimer() {
 
-            speedDrawCountdownTimer = CountdownTimer(120).also { timer ->
+        val gameMode = _drawingUiState.value.gameMode
+        if (gameMode !is GameMode.SpeedDraw || speedDrawCountdownTimer != null) return
 
-                if (timer.isRunning.not()){
+        speedDrawCountdownTimer = CountdownTimer(30).also { timer ->
 
-                    Timber.i("updateDrawTime() has started the timer: ${timer.isRunning}")
-                    timer.start()
-                }
+            timer.start()
+            timer.remainingSeconds.onEach { secs ->
 
-                timer.remainingSeconds.onEach { secs ->
-
-                    _drawingUiState.update { it.copy(remainingSpeedDrawSeconds = secs) }
-                }
-                        .launchIn(viewModelScope)
+                _drawingUiState.update { it.copy(remainingSpeedDrawSeconds = secs) }
             }
+                    .launchIn(viewModelScope)
 
         }
+
     }
 
     private fun startDrawing() {
 
         Timber.i("Inside startDrawing(), time is ${speedDrawCountdownTimer?.isRunning}")
 
-        updateDrawTime()
+        launchSpeedDrawTimer()
         _drawingUiState.update {
 
             it.copy(currentPath = DrawUiState.PathData(id = System.currentTimeMillis()))
@@ -228,7 +223,6 @@ class DrawViewModel(
     private fun updatePreviewTimeCountdown() {
 
         previewCountdownTimer?.stop() // // Clean up the old one if needed
-
 
 
         previewCountdownTimer =
