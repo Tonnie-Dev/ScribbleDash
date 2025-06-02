@@ -51,12 +51,12 @@ class CountdownTimer(private val totalSeconds: Int) {
 
     private fun launchTimer() {
 
-lastEmitTime = System.currentTimeMillis()
+
         job = CoroutineScope(Dispatchers.Main).launch {
             while (elapsedSeconds < totalSeconds && isRunning) {
                 delay(1_000)
-                val currentTime = System.currentTimeMillis()
-                elapsedSeconds = ((currentTime - lastEmitTime)/1000).toInt()
+                elapsedSeconds++
+
                 _remainingSeconds.value = totalSeconds - elapsedSeconds
 
             }

@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 
 class DrawViewModel(
@@ -97,9 +98,13 @@ class DrawViewModel(
 
     private fun launchSpeedDrawTimer() {
 
+        speedDrawCountdownTimer?.resume()
+        Timber.i("Inside LSDT - prepping, null check: ${speedDrawCountdownTimer == null} ")
         val gameMode = _drawingUiState.value.gameMode
         if (gameMode !is GameMode.SpeedDraw || speedDrawCountdownTimer != null) return
 
+
+        Timber.i("Inside LSDT - creating new timer ")
         speedDrawCountdownTimer = CountdownTimer(Constants.SPEED_DRAW_TIME_LIMIT).also { timer ->
 
             timer.start()
@@ -114,10 +119,10 @@ class DrawViewModel(
     }
 
     private fun startDrawing() {
-
-
         launchSpeedDrawTimer()
-        speedDrawCountdownTimer?.resume()
+
+
+
         _drawingUiState.update {
 
             it.copy(currentPath = DrawUiState.PathData(id = System.currentTimeMillis()))
@@ -189,15 +194,12 @@ class DrawViewModel(
 
     private fun submitDrawing() {
 
-        when(_drawingUiState.value.gameMode){
+        when (_drawingUiState.value.gameMode) {
 
             is GameMode.SpeedDraw -> launchSpeedGameFlow()
             is GameMode.EndlessMode -> launchSpeedGameFlow()
             else -> launchOneWonderGameFlow()
         }
-
-
-
 
 
     }
@@ -283,7 +285,15 @@ class DrawViewModel(
 
     private fun fetchRandomVector() {
         if (vectorList.isEmpty()) {
-            _drawingUiState.update { it.copy(currentSvgPath = RandomVectorData(emptyList(), 0f, 0f)) }
+            _drawingUiState.update {
+                it.copy(
+                        currentSvgPath = RandomVectorData(
+                                emptyList(),
+                                0f,
+                                0f
+                        )
+                )
+            }
             return
         }
 
@@ -296,7 +306,7 @@ class DrawViewModel(
             (vectorList as MutableList).shuffle()
         }
 
-       // _drawingUiState.update { it.copy(currentSvgPath = randomVectorProvider()) }
+        // _drawingUiState.update { it.copy(currentSvgPath = randomVectorProvider()) }
     }
 
     private fun updateGameLevel(gameLevel: Int) {
