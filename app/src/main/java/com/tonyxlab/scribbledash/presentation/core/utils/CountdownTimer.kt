@@ -18,6 +18,8 @@ class CountdownTimer(private val totalSeconds: Int) {
         private set
 
 
+    private var lastEmitTime = 0L
+
     private var elapsedSeconds = 0
 
     private var job: Job? = null
@@ -48,13 +50,19 @@ class CountdownTimer(private val totalSeconds: Int) {
     }
 
     private fun launchTimer() {
+
+lastEmitTime = System.currentTimeMillis()
         job = CoroutineScope(Dispatchers.Main).launch {
             while (elapsedSeconds < totalSeconds && isRunning) {
                 delay(1_000)
-                elapsedSeconds++
+                val currentTime = System.currentTimeMillis()
+                elapsedSeconds = ((currentTime - lastEmitTime)/1000).toInt()
                 _remainingSeconds.value = totalSeconds - elapsedSeconds
+
             }
+
             isRunning = false
+
         }
     }
 }
