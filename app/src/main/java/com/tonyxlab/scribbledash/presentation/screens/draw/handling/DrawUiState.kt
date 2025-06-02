@@ -22,8 +22,10 @@ data class DrawUiState(
     val remainingSpeedDrawSeconds: Int = 0,
     val canvasSize: Size = Size.Zero,
     val similarityScore: Int = 0,
+    val counter:Int = 0,
     val gameMode: GameMode = GameMode.OneRoundWonder,
     val difficultyLevel: DifficultyLevel = DifficultyLevel.BEGINNER
+
 ) {
 
     @Serializable

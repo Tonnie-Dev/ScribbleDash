@@ -10,7 +10,6 @@ import com.tonyxlab.scribbledash.domain.model.DifficultyLevel
 import com.tonyxlab.scribbledash.domain.model.GameMode
 import com.tonyxlab.scribbledash.navigation.Destinations
 import com.tonyxlab.scribbledash.presentation.core.utils.CountdownTimer
-import com.tonyxlab.scribbledash.presentation.screens.draw.gamemode.speed.SpeedGameState
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawActionEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiEvent
 import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState
@@ -18,6 +17,7 @@ import com.tonyxlab.scribbledash.presentation.screens.draw.handling.DrawUiState.
 import com.tonyxlab.utils.Constants
 import com.tonyxlab.utils.calculatePathSimilarity
 import com.tonyxlab.utils.toSvgPathStrings
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import kotlinx.coroutines.withContext
 
 
 class DrawViewModel(
@@ -37,15 +37,13 @@ class DrawViewModel(
     private val _drawingUiState = MutableStateFlow(DrawUiState())
     val drawingUiState = _drawingUiState.asStateFlow()
 
-    private val _speedDrawState = MutableStateFlow(SpeedGameState.PreviewDrawing)
-    val speedDrawState = _speedDrawState.asStateFlow()
-
     private val _actionEvent = Channel<DrawActionEvent>()
     val actionEvent = _actionEvent.receiveAsFlow()
 
     var previewCountdownTimer: CountdownTimer? = null
     var speedDrawCountdownTimer: CountdownTimer? = null
 
+    private var drawingsCount = 0
 
     init {
 
@@ -58,7 +56,7 @@ class DrawViewModel(
         updateGameMode(gameMode)
 
         updatePreviewTimeCountdown()
-        pickNewRandomVector()
+        fetchRandomVector()
     }
 
     fun onEvent(event: DrawUiEvent) {
@@ -101,7 +99,7 @@ class DrawViewModel(
         val gameMode = _drawingUiState.value.gameMode
         if (gameMode !is GameMode.SpeedDraw || speedDrawCountdownTimer != null) return
 
-        speedDrawCountdownTimer = CountdownTimer(30).also { timer ->
+        speedDrawCountdownTimer = CountdownTimer(Constants.SPEED_DRAW_TIME_LIMIT).also { timer ->
 
             timer.start()
             timer.remainingSeconds.onEach { secs ->
@@ -116,9 +114,9 @@ class DrawViewModel(
 
     private fun startDrawing() {
 
-        Timber.i("Inside startDrawing(), time is ${speedDrawCountdownTimer?.isRunning}")
 
         launchSpeedDrawTimer()
+        speedDrawCountdownTimer?.resume()
         _drawingUiState.update {
 
             it.copy(currentPath = DrawUiState.PathData(id = System.currentTimeMillis()))
@@ -174,23 +172,36 @@ class DrawViewModel(
         }
     }
 
+
+    private suspend fun calculateSimilarity(): Int = withContext(Dispatchers.Default) {
+
+        calculatePathSimilarity(
+
+                referencePathStrings = _drawingUiState.value.currentSvgPath.paths,
+                userPathStrings = _drawingUiState.value.paths.toSvgPathStrings(),
+                difficulty = _drawingUiState.value.difficultyLevel,
+                canvasSize = _drawingUiState.value.canvasSize
+        )
+
+    }
+
+
     private fun submitDrawing() {
 
+        when(_drawingUiState.value.gameMode){
 
-        val similarityScore =
-
-            calculatePathSimilarity(
-
-                    referencePathStrings = _drawingUiState.value.currentSvgPath.paths,
-                    userPathStrings = _drawingUiState.value.paths.toSvgPathStrings(),
-                    difficulty = _drawingUiState.value.difficultyLevel,
-                    canvasSize = _drawingUiState.value.canvasSize
-            )
-
-        _drawingUiState.update {
-            it.copy(similarityScore = similarityScore)
+            is GameMode.SpeedDraw -> launchSpeedGameFlow()
+            is GameMode.EndlessMode -> launchSpeedGameFlow()
+            else -> launchOneWonderGameFlow()
         }
 
+
+
+
+
+    }
+
+    private fun launchOneWonderGameFlow() {
         viewModelScope.launch {
 
 
@@ -204,7 +215,35 @@ class DrawViewModel(
                     )
             )
         }
+    }
 
+    private fun launchSpeedGameFlow() {
+        speedDrawCountdownTimer?.pause()
+
+        viewModelScope.launch {
+            val score = calculateSimilarity()
+            _drawingUiState.update {
+                it.copy(similarityScore = score)
+            }
+
+
+        }
+
+        updateDrawingsCount()
+        clearPaths()
+        fetchRandomVector()
+        updatePreviewTimeCountdown()
+    }
+
+
+    private fun updateDrawingsCount() {
+
+        if (_drawingUiState.value.similarityScore >= 40) {
+
+            drawingsCount++
+            _drawingUiState.update { it.copy(counter = drawingsCount) }
+
+        }
 
     }
 
@@ -241,7 +280,9 @@ class DrawViewModel(
 
     }
 
-    fun pickNewRandomVector() {
+    private fun fetchRandomVector() {
+
+
         _drawingUiState.update { it.copy(currentSvgPath = randomVectorProvider()) }
     }
 
@@ -258,11 +299,22 @@ class DrawViewModel(
         _drawingUiState.update { it.copy(gameMode = gameMode) }
     }
 
+    private fun clearPaths() {
+
+        _drawingUiState.update {
+            it.copy(
+                    currentPath = null,
+                    paths = emptyList(),
+                    undoStack = emptyList()
+            )
+        }
+
+    }
+
     override fun onCleared() {
         super.onCleared()
         previewCountdownTimer?.pause()
+
     }
 
-
 }
-

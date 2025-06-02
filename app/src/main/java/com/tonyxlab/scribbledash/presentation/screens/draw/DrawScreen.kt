@@ -155,13 +155,13 @@ fun DrawScreenContent(
                     canDraw = canDraw,
                     onCustomDraw = {
 
-                        paths.fastForEach { pathData ->
+                      /*  paths.fastForEach { pathData ->
                             drawCustomPaths(path = pathData.path, color = pathData.color)
                         }
 
                         currentPath?.let {
                             drawCustomPaths(path = it.path, color = it.color)
-                        }
+                        }*/
 
                         if (canDraw) {
 
