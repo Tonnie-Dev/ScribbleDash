@@ -31,9 +31,10 @@ import kotlinx.coroutines.withContext
 
 class DrawViewModel(
     private val randomVectorProvider: () -> RandomVectorData,
+    private val vectorList: List<RandomVectorData>,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
+    private var currentIndex = 0
     private val _drawingUiState = MutableStateFlow(DrawUiState())
     val drawingUiState = _drawingUiState.asStateFlow()
 
@@ -281,9 +282,21 @@ class DrawViewModel(
     }
 
     private fun fetchRandomVector() {
+        if (vectorList.isEmpty()) {
+            _drawingUiState.update { it.copy(currentSvgPath = RandomVectorData(emptyList(), 0f, 0f)) }
+            return
+        }
 
+        val nextVector = vectorList[currentIndex]
+        _drawingUiState.update { it.copy(currentSvgPath = nextVector) }
 
-        _drawingUiState.update { it.copy(currentSvgPath = randomVectorProvider()) }
+        currentIndex = (currentIndex + 1) % vectorList.size
+        // Optional: reshuffle when looping back
+        if (currentIndex == 0) {
+            (vectorList as MutableList).shuffle()
+        }
+
+       // _drawingUiState.update { it.copy(currentSvgPath = randomVectorProvider()) }
     }
 
     private fun updateGameLevel(gameLevel: Int) {

@@ -63,5 +63,18 @@ val randomVectorProviderModule = module {
 }
 
 
+val vectorPathListModule = module {
+    single<List<RandomVectorData>> {
+        val context = get<Context>()
+        val vectorDataMap = getRawVectorPathData(context)
+
+        vectorDataMap.map { (_, value) ->
+            RandomVectorData(value.pathDataList, value.viewportWidth, value.viewportHeight)
+        }.shuffled() // shuffle once for good randomness!
+    }
+}
+
+
+
 
 

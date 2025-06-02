@@ -5,6 +5,7 @@ import com.tonyxlab.scribbledash.di.appModule
 
 
 import com.tonyxlab.scribbledash.di.randomVectorProviderModule
+import com.tonyxlab.scribbledash.di.vectorPathListModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -21,7 +22,7 @@ class ScribbleDashApp : Application() {
         startKoin {
             androidLogger(Level.DEBUG) // Use Level.INFO or Level.NONE in release
             androidContext(this@ScribbleDashApp) // Provide the application context
-            modules(listOf(appModule,  randomVectorProviderModule))
+            modules(listOf(appModule,  randomVectorProviderModule, vectorPathListModule))
 
         }
     }
